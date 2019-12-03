@@ -1,0 +1,669 @@
+﻿<Activity mc:Ignorable="sap sap2010 sads" x:Class="Main"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:s="clr-namespace:System;assembly=mscorlib"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:sd="clr-namespace:System.Data;assembly=System.Data"
+ xmlns:si="clr-namespace:System.IO;assembly=mscorlib"
+ xmlns:snm="clr-namespace:System.Net.Mail;assembly=System"
+ xmlns:ui="http://schemas.uipath.com/workflow/activities"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="in_Template_Path" Type="InArgument(x:String)" />
+    <x:Property Name="in_Config" Type="InArgument(scg:Dictionary(x:String, x:Object))" />
+    <x:Property Name="in_Transaction_Item" Type="InArgument(snm:MailMessage)" />
+    <x:Property Name="in_DocumentDate" Type="InArgument(x:String)" />
+    <x:Property Name="in_DocumentType" Type="InArgument(x:String)" />
+    <x:Property Name="in_Currency" Type="InArgument(x:String)" />
+    <x:Property Name="in_CompanyCode" Type="InArgument(x:String)" />
+    <x:Property Name="in_Gl_Email" Type="InArgument(x:String)" />
+    <x:Property Name="out_Xlspath" Type="OutArgument(x:String)" />
+    <x:Property Name="in_Audit_Log_Path" Type="InArgument(x:String)" />
+    <x:Property Name="in_Country_Code" Type="InArgument(x:String)" />
+    <x:Property Name="in_Sender_Email" Type="InArgument(x:String)" />
+    <x:Property Name="in_CC_Email" Type="InArgument(x:String)" />
+    <x:Property Name="in_Transaction_Queue_Item_Mails_Data" Type="InArgument(ui:QueueItem)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>Main_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>System.Activities.Expressions</x:String>
+      <x:String>System.Activities.Validation</x:String>
+      <x:String>System.Activities.XamlIntegration</x:String>
+      <x:String>Microsoft.VisualBasic</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System</x:String>
+      <x:String>System.Collections</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Diagnostics</x:String>
+      <x:String>System.Drawing</x:String>
+      <x:String>System.IO</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>System.Net.Mail</x:String>
+      <x:String>System.Xml</x:String>
+      <x:String>System.Xml.Linq</x:String>
+      <x:String>UiPath.Core</x:String>
+      <x:String>UiPath.Core.Activities</x:String>
+      <x:String>System.Windows.Markup</x:String>
+      <x:String>Microsoft.VisualBasic.CompilerServices</x:String>
+      <x:String>UiPath.Excel</x:String>
+      <x:String>System.Xml.Serialization</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>Microsoft.VisualBasic</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.Drawing</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>System.Xml</AssemblyReference>
+      <AssemblyReference>System.Xml.Linq</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>UiPath.UiAutomation.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.System.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.Studio.Plugin.Workflow</AssemblyReference>
+      <AssemblyReference>System.ServiceModel</AssemblyReference>
+      <AssemblyReference>System.ValueTuple</AssemblyReference>
+      <AssemblyReference>UiPath.Excel</AssemblyReference>
+      <AssemblyReference>UiPath.Mail</AssemblyReference>
+      <AssemblyReference>System.Collections.Immutable</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.Composition</AssemblyReference>
+      <AssemblyReference>Microsoft.VisualStudio.Services.Common</AssemblyReference>
+      <AssemblyReference>System.Data.DataSetExtensions</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence sap2010:Annotation.AnnotationText="Run Macro Sequence to run macro and convert it to xls format" DisplayName="Run Macro Sequence" sap2010:WorkflowViewState.IdRef="Sequence_35">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="ui:WorkbookApplication" Name="Template" />
+      <Variable x:TypeArguments="ui:GenericValue" Name="SheetName" />
+      <Variable x:TypeArguments="ui:GenericValue" Name="uploadSheetData" />
+      <Variable x:TypeArguments="ui:GenericValue" Name="xlspath" />
+      <Variable x:TypeArguments="ui:GenericValue" Name="sender" />
+      <Variable x:TypeArguments="ui:GenericValue" Name="cc_Mails" />
+      <Variable x:TypeArguments="ui:GenericValue" Name="subject" />
+      <Variable x:TypeArguments="sd:DataTable" Name="template_Dt" />
+    </Sequence.Variables>
+    <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_19" Level="Info" Message="[&quot;Entered run macro workflow&quot;]" />
+    <Assign DisplayName="Assign - Sender" sap2010:WorkflowViewState.IdRef="Assign_9">
+      <Assign.To>
+        <OutArgument x:TypeArguments="ui:GenericValue">[sender]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="ui:GenericValue">[in_Sender_Email]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Assign - cc Mails" sap2010:WorkflowViewState.IdRef="Assign_10">
+      <Assign.To>
+        <OutArgument x:TypeArguments="ui:GenericValue">[cc_Mails]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="ui:GenericValue">[in_CC_Email]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Assign - Subject" sap2010:WorkflowViewState.IdRef="Assign_11">
+      <Assign.To>
+        <OutArgument x:TypeArguments="ui:GenericValue">[subject]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="ui:GenericValue">[in_Transaction_Item.Subject]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <ui:ExcelApplicationScope Password="{x:Null}" sap2010:Annotation.AnnotationText="Excel Application Scope To Execute Macro" CreateNewFile="False" DisplayName="Excel Application Scope To Execute Macro" sap2010:WorkflowViewState.IdRef="ExcelApplicationScope_7" WorkbookPath="[in_Template_Path]">
+      <ui:ExcelApplicationScope.Body>
+        <ActivityAction x:TypeArguments="ui:WorkbookApplication">
+          <ActivityAction.Argument>
+            <DelegateInArgument x:TypeArguments="ui:WorkbookApplication" Name="ExcelWorkbookScope" />
+          </ActivityAction.Argument>
+          <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_28">
+            <ui:WindowScope ApplicationWindow="{x:Null}" SearchScope="{x:Null}" TimeoutMS="{x:Null}" Window="{x:Null}" DisplayName="Attach Window 'Excel'" sap2010:WorkflowViewState.IdRef="WindowScope_2" InformativeScreenshot="f2a9a85a17b69be720e8a867a6f4c50a" Selector="&lt;wnd app='excel.exe' cls='XLMAIN' title='*' /&gt;">
+              <ui:WindowScope.Body>
+                <ActivityAction x:TypeArguments="x:Object">
+                  <ActivityAction.Argument>
+                    <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
+                  </ActivityAction.Argument>
+                  <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_27">
+                    <ui:MaximizeWindow Window="{x:Null}" DisplayName="Maximize Window" sap2010:WorkflowViewState.IdRef="MaximizeWindow_2" />
+                  </Sequence>
+                </ActivityAction>
+              </ui:WindowScope.Body>
+            </ui:WindowScope>
+            <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'page tab  Journal Entry'" sap2010:WorkflowViewState.IdRef="Click_6" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="True">
+              <ui:Click.CursorPosition>
+                <ui:CursorPosition Position="Center">
+                  <ui:CursorPosition.OffsetX>
+                    <InArgument x:TypeArguments="x:Int32" />
+                  </ui:CursorPosition.OffsetX>
+                  <ui:CursorPosition.OffsetY>
+                    <InArgument x:TypeArguments="x:Int32" />
+                  </ui:CursorPosition.OffsetY>
+                </ui:CursorPosition>
+              </ui:Click.CursorPosition>
+              <ui:Click.Target>
+                <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="21250de1c018382ce22555ef22c93383" Selector="&lt;wnd app='excel.exe' cls='XLMAIN' title='*' /&gt;&lt;wnd cls='EXCEL7' title='*' /&gt;&lt;ctrl name='*' role='client' /&gt;&lt;ctrl name='Sheet Navigation Bar' role='client' /&gt;&lt;ctrl name='Sheet Tabs' role='page tab list' /&gt;&lt;ctrl name='Journal Entry' role='page tab' /&gt;" WaitForReady="INTERACTIVE" />
+              </ui:Click.Target>
+            </ui:Click>
+            <ui:TypeInto DelayBefore="{x:Null}" DelayBetweenKeys="{x:Null}" DelayMS="{x:Null}" Activate="True" ClickBeforeTyping="False" ContinueOnError="True" DisplayName="Type Into 'Edit'" EmptyField="False" sap2010:WorkflowViewState.IdRef="TypeInto_1" SendWindowMessages="False" SimulateType="False" Text="o1[k(enter)]">
+              <ui:TypeInto.Target>
+                <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="baaa0776d2c65978399c43b5bd9c4f62" Selector="&lt;wnd app='excel.exe' cls='XLMAIN' title='*' /&gt;&lt;wnd cls='Edit' /&gt;" WaitForReady="INTERACTIVE" />
+              </ui:TypeInto.Target>
+            </ui:TypeInto>
+            <ui:ClickImage ContinueOnError="{x:Null}" DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click Image 'RUN'" sap2010:WorkflowViewState.IdRef="ClickImage_3" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False">
+              <ui:ClickImage.CursorPosition>
+                <ui:CursorPosition Position="Center">
+                  <ui:CursorPosition.OffsetX>
+                    <InArgument x:TypeArguments="x:Int32" />
+                  </ui:CursorPosition.OffsetX>
+                  <ui:CursorPosition.OffsetY>
+                    <InArgument x:TypeArguments="x:Int32" />
+                  </ui:CursorPosition.OffsetY>
+                </ui:CursorPosition>
+              </ui:ClickImage.CursorPosition>
+              <ui:ClickImage.Image>
+                <ui:ImageTarget Image="{x:Null}" Accuracy="0.8" TargetImageBase64="iVBORw0KGgoAAAANSUhEUgAAACMAAAAWCAYAAABKbiVHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAE6SURBVEhL7ZQtTkNBFIWfwbWiBlNUESAwJFQhSFpRgyAYDJ6gcQh8fUUVFnSTLqDpBroBdsAehnyTnJub6cwTzXuk4omTzJycO/Plzk/1GDbhWNTBlGQw46+PUFXVngY3l+F2Pd8rbEMGczV/ycJI/wGUhZE33X2G3vkweqezsfltqRbG+4IBUDnGae7saWIe85NBP+ao1/zi/dkyXrUwd9tFLMYbvT6YpxzjtN53ULmcyCtneQ08TCou8f3vKuYOgaGe7rAG4zRneQ1KMHRGIOgQmFyOuyhPKh7T7Ofbjshv0BQMkifV3hn/92hBupR6vr41GKTupK8E6VLzB+W6qFxjMDxD+RwdHhvKkxqFuV6+xQCL+gAAKiaDx1EJiDwdYkPmuQ76/6i0DzKYY1AHU1IHU1IHk9cm/AFRE+18+wwY3wAAAABJRU5ErkJggg==" />
+              </ui:ClickImage.Image>
+              <ui:ClickImage.Target>
+                <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" Selector="&lt;wnd app='excel.exe' cls='XLMAIN' title='*' /&gt;" WaitForReady="INTERACTIVE" />
+              </ui:ClickImage.Target>
+            </ui:ClickImage>
+            <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'File'" sap2010:WorkflowViewState.IdRef="Click_7" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="True">
+              <ui:Click.CursorPosition>
+                <ui:CursorPosition Position="Center">
+                  <ui:CursorPosition.OffsetX>
+                    <InArgument x:TypeArguments="x:Int32" />
+                  </ui:CursorPosition.OffsetX>
+                  <ui:CursorPosition.OffsetY>
+                    <InArgument x:TypeArguments="x:Int32" />
+                  </ui:CursorPosition.OffsetY>
+                </ui:CursorPosition>
+              </ui:Click.CursorPosition>
+              <ui:Click.Target>
+                <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="adee6c25e7283f87adede3fe39c28976" Selector="&lt;wnd app='excel.exe' cls='XLMAIN' title='*' /&gt;&lt;ctrl name='File Tab' role='push button' /&gt;" WaitForReady="INTERACTIVE" />
+              </ui:Click.Target>
+            </ui:Click>
+            <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'Save'" sap2010:WorkflowViewState.IdRef="Click_8" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="True">
+              <ui:Click.CursorPosition>
+                <ui:CursorPosition Position="Center">
+                  <ui:CursorPosition.OffsetX>
+                    <InArgument x:TypeArguments="x:Int32" />
+                  </ui:CursorPosition.OffsetX>
+                  <ui:CursorPosition.OffsetY>
+                    <InArgument x:TypeArguments="x:Int32" />
+                  </ui:CursorPosition.OffsetY>
+                </ui:CursorPosition>
+              </ui:Click.CursorPosition>
+              <ui:Click.Target>
+                <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="07360152af93412598e4ebc39b60be9b" Selector="&lt;wnd app='excel.exe' cls='XLMAIN' title='*' /&gt;&lt;ctrl name='Save' role='menu item' /&gt;" WaitForReady="INTERACTIVE" />
+              </ui:Click.Target>
+            </ui:Click>
+            <Delay DisplayName="Delay to save macro and to close application" Duration="00:00:20" sap2010:WorkflowViewState.IdRef="Delay_2" />
+            <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_14" Level="Info" Message="[&quot;Macro executed .verifying upload sheet creation&quot;]" />
+          </Sequence>
+        </ActivityAction>
+      </ui:ExcelApplicationScope.Body>
+    </ui:ExcelApplicationScope>
+    <TryCatch sap2010:Annotation.AnnotationText="Read UploadTry Catch" DisplayName="Read UploadTry Catch" sap2010:WorkflowViewState.IdRef="TryCatch_2">
+      <TryCatch.Try>
+        <Sequence DisplayName="Read Upload Sheet Sequence" sap2010:WorkflowViewState.IdRef="Sequence_29">
+          <ui:CloseApplication ContinueOnError="True" DisplayName="Close Application 'Excel'" sap2010:WorkflowViewState.IdRef="CloseApplication_3">
+            <ui:CloseApplication.Target>
+              <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" InformativeScreenshot="3855fbc207afae4e94bbbdcce4096c27" Selector="&lt;wnd app='excel.exe' cls='XLMAIN' title='*' /&gt;" TimeoutMS="2000" WaitForReady="INTERACTIVE" />
+            </ui:CloseApplication.Target>
+          </ui:CloseApplication>
+          <Delay Duration="00:00:03" sap2010:WorkflowViewState.IdRef="Delay_3" />
+          <ui:ReadCell Cell="A1" DisplayName="Read Cell" sap2010:WorkflowViewState.IdRef="ReadCell_3" SheetName="Upload" WorkbookPath="[in_Template_Path]">
+            <ui:ReadCell.Result>
+              <OutArgument x:TypeArguments="ui:GenericValue">[uploadSheetData]</OutArgument>
+            </ui:ReadCell.Result>
+          </ui:ReadCell>
+          <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_15" Level="Info" Message="[&quot;Upload sheet generated&quot;]" />
+        </Sequence>
+      </TryCatch.Try>
+      <TryCatch.Catches>
+        <Catch x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="Catch`1_2">
+          <ActivityAction x:TypeArguments="s:Exception">
+            <ActivityAction.Argument>
+              <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+            </ActivityAction.Argument>
+            <Sequence DisplayName="Exception Sequence - If upload sheet not generated" sap2010:WorkflowViewState.IdRef="Sequence_31">
+              <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_16" Level="Info" Message="[&quot;Upload Sheet not generated&quot;]" />
+              <Sequence DisplayName="Exception sequence" sap2010:WorkflowViewState.IdRef="Sequence_30">
+                <Sequence.Variables>
+                  <Variable x:TypeArguments="sd:DataTable" Name="jv_Processing_Tracker" />
+                  <Variable x:TypeArguments="ui:GenericValue" Name="tracker_Count" />
+                  <Variable x:TypeArguments="ui:GenericValue" Name="error_Message_Deatils" />
+                  <Variable x:TypeArguments="ui:Image" Name="error_Screenshot" />
+                  <Variable x:TypeArguments="x:String" Name="business_Exception_Template" />
+                </Sequence.Variables>
+                <ui:ReadRange AddHeaders="True" DataTable="[jv_Processing_Tracker]" DisplayName="Read JV processing tracker" sap2010:WorkflowViewState.IdRef="ReadRange_3" SheetName="Processing_Log" WorkbookPath="[in_Audit_Log_Path]">
+                  <ui:ReadRange.Range>
+                    <InArgument x:TypeArguments="x:String">
+                      <Literal x:TypeArguments="x:String" Value="" />
+                    </InArgument>
+                  </ui:ReadRange.Range>
+                </ui:ReadRange>
+                <Assign sap2010:WorkflowViewState.IdRef="Assign_12">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="ui:GenericValue">[tracker_Count]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="ui:GenericValue">[jv_Processing_Tracker.Rows.Count +2]</InArgument>
+                  </Assign.Value>
+                </Assign>
+                <ui:WriteCell Cell="[&quot;A&quot;+tracker_Count]" DisplayName="Request Status- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_28" SheetName="Processing_Log" Text="NA" WorkbookPath="[in_Audit_Log_Path]" />
+                <ui:WriteCell Cell="[&quot;B&quot;+tracker_Count]" DisplayName="Document Type- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_10" SheetName="Processing_Log" Text="[in_DocumentType]" WorkbookPath="[in_Audit_Log_Path]" />
+                <ui:WriteCell Cell="[&quot;C&quot;+tracker_Count]" DisplayName="Document Date- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_29" SheetName="Processing_Log" Text="[in_DocumentDate]" WorkbookPath="[in_Audit_Log_Path]" />
+                <ui:WriteCell Cell="[&quot;D&quot;+tracker_Count]" DisplayName="Currency Key- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_12" SheetName="Processing_Log" Text="[in_Currency]" WorkbookPath="[in_Audit_Log_Path]" />
+                <ui:WriteCell Cell="[&quot;E&quot;+tracker_Count]" DisplayName="Posting Date- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_30" SheetName="Processing_Log" Text="[in_DocumentDate]" WorkbookPath="[in_Audit_Log_Path]" />
+                <ui:WriteCell Cell="[&quot;F&quot;+tracker_Count]" DisplayName="Requestor Email- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_15" SheetName="Processing_Log" Text="[sender]" WorkbookPath="[in_Audit_Log_Path]" />
+                <ui:WriteCell Cell="[&quot;G&quot;+tracker_Count]" DisplayName="Approver Email(s)- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_16" SheetName="Processing_Log" Text="[cc_Mails]" WorkbookPath="[in_Audit_Log_Path]" />
+                <ui:WriteCell Cell="[&quot;H&quot;+tracker_Count]" DisplayName="Company Code- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_31" SheetName="Processing_Log" Text="[in_CompanyCode]" WorkbookPath="[in_Audit_Log_Path]" />
+                <ui:WriteCell Cell="[&quot;I&quot;+tracker_Count]" DisplayName="Request Status- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_32" SheetName="Processing_Log" Text="NA" WorkbookPath="[in_Audit_Log_Path]" />
+                <ui:WriteCell Cell="[&quot;J&quot;+tracker_Count]" DisplayName="Request Status- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_17" SheetName="Processing_Log" Text="Failed" WorkbookPath="[in_Audit_Log_Path]" />
+                <ui:WriteCell Cell="[&quot;K&quot;+tracker_Count]" DisplayName="Reason Of Failure- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_18" SheetName="Processing_Log" Text="Upload Sheet not generated" WorkbookPath="[in_Audit_Log_Path]" />
+                <ui:WriteCell Cell="[&quot;L&quot;+tracker_Count]" DisplayName="Reason Of Failure- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_38" SheetName="Processing_Log" Text="[in_Country_Code]" WorkbookPath="[in_Audit_Log_Path]" />
+                <ui:ReadTextFile Content="[business_Exception_Template]" DisplayName="Read Text File" FileName="[in_Config(&quot;templates_Path&quot;).ToString+&quot;Business Exception.txt&quot;]" sap2010:WorkflowViewState.IdRef="ReadTextFile_2" />
+                <Assign sap2010:WorkflowViewState.IdRef="Assign_13">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="ui:GenericValue">[error_Message_Deatils]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="ui:GenericValue">["Upload Sheet not generated"]</InArgument>
+                  </Assign.Value>
+                </Assign>
+                <ui:SendOutlookMail Account="{x:Null}" Bcc="{x:Null}" Cc="{x:Null}" MailMessage="{x:Null}" TimeoutMS="{x:Null}" Body="[string.Format(business_Exception_Template,error_Message_Deatils,in_Gl_Email)]" DisplayName="Send Outlook Mail Message" sap2010:WorkflowViewState.IdRef="SendOutlookMail_2" IsBodyHtml="True" IsDraft="False" Subject="[&quot;JV Business Exception : &quot;+in_CompanyCode.ToString +&quot; : &quot;+subject]" To="[in_Gl_Email]">
+                  <ui:SendOutlookMail.Files>
+                    <scg:List x:TypeArguments="InArgument(x:String)" Capacity="4">
+                      <InArgument x:TypeArguments="x:String">[in_Template_Path]</InArgument>
+                    </scg:List>
+                  </ui:SendOutlookMail.Files>
+                </ui:SendOutlookMail>
+              </Sequence>
+              <Throw Exception="[new businessruleexception(in_CompanyCode)]" sap2010:WorkflowViewState.IdRef="Throw_5" />
+            </Sequence>
+          </ActivityAction>
+        </Catch>
+      </TryCatch.Catches>
+    </TryCatch>
+    <If sap2010:Annotation.AnnotationText="If Upload sheet data is null" Condition="[uploadSheetData=&quot;&quot;]" DisplayName="If Upload sheet data is null" sap2010:WorkflowViewState.IdRef="If_6">
+      <If.Then>
+        <Sequence DisplayName="Exception Sequence - Upload sheet is blank" sap2010:WorkflowViewState.IdRef="Sequence_33">
+          <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_17" Level="Info" Message="[&quot;Upload sheet is blank&quot;]" />
+          <Sequence DisplayName="Exception sequence" sap2010:WorkflowViewState.IdRef="Sequence_32">
+            <Sequence.Variables>
+              <Variable x:TypeArguments="sd:DataTable" Name="jv_Processing_Tracker" />
+              <Variable x:TypeArguments="ui:GenericValue" Name="tracker_Count" />
+              <Variable x:TypeArguments="ui:GenericValue" Name="error_Message_Deatils" />
+              <Variable x:TypeArguments="ui:Image" Name="error_Screenshot" />
+              <Variable x:TypeArguments="x:String" Name="business_Exception_Template" />
+            </Sequence.Variables>
+            <ui:ReadRange AddHeaders="True" DataTable="[jv_Processing_Tracker]" DisplayName="Read JV processing tracker" sap2010:WorkflowViewState.IdRef="ReadRange_4" SheetName="Processing_Log" WorkbookPath="[in_Audit_Log_Path]">
+              <ui:ReadRange.Range>
+                <InArgument x:TypeArguments="x:String">
+                  <Literal x:TypeArguments="x:String" Value="" />
+                </InArgument>
+              </ui:ReadRange.Range>
+            </ui:ReadRange>
+            <Assign sap2010:WorkflowViewState.IdRef="Assign_14">
+              <Assign.To>
+                <OutArgument x:TypeArguments="ui:GenericValue">[tracker_Count]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="ui:GenericValue">[jv_Processing_Tracker.Rows.Count +2]</InArgument>
+              </Assign.Value>
+            </Assign>
+            <ui:WriteCell Cell="[&quot;A&quot;+tracker_Count]" DisplayName="Request Status- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_33" SheetName="Processing_Log" Text="NA" WorkbookPath="[in_Audit_Log_Path]" />
+            <ui:WriteCell Cell="[&quot;B&quot;+tracker_Count]" DisplayName="Document Type- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_19" SheetName="Processing_Log" Text="[in_DocumentType]" WorkbookPath="[in_Audit_Log_Path]" />
+            <ui:WriteCell Cell="[&quot;C&quot;+tracker_Count]" DisplayName="Document Date- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_34" SheetName="Processing_Log" Text="[in_DocumentDate]" WorkbookPath="[in_Audit_Log_Path]" />
+            <ui:WriteCell Cell="[&quot;D&quot;+tracker_Count]" DisplayName="Currency Key- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_21" SheetName="Processing_Log" Text="[in_Currency]" WorkbookPath="[in_Audit_Log_Path]" />
+            <ui:WriteCell Cell="[&quot;E&quot;+tracker_Count]" DisplayName="Posting Date- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_35" SheetName="Processing_Log" Text="[in_DocumentDate]" WorkbookPath="[in_Audit_Log_Path]" />
+            <ui:WriteCell Cell="[&quot;F&quot;+tracker_Count]" DisplayName="Requestor Email- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_24" SheetName="Processing_Log" Text="[sender]" WorkbookPath="[in_Audit_Log_Path]" />
+            <ui:WriteCell Cell="[&quot;G&quot;+tracker_Count]" DisplayName="Approver Email(s)- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_25" SheetName="Processing_Log" Text="[cc_Mails]" WorkbookPath="[in_Audit_Log_Path]" />
+            <ui:WriteCell Cell="[&quot;H&quot;+tracker_Count]" DisplayName="Company Code- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_36" SheetName="Processing_Log" Text="[in_CompanyCode]" WorkbookPath="[in_Audit_Log_Path]" />
+            <ui:WriteCell Cell="[&quot;I&quot;+tracker_Count]" DisplayName="Request Status- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_37" SheetName="Processing_Log" Text="NA" WorkbookPath="[in_Audit_Log_Path]" />
+            <ui:WriteCell Cell="[&quot;J&quot;+tracker_Count]" DisplayName="Request Status- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_26" SheetName="Processing_Log" Text="Failed" WorkbookPath="[in_Audit_Log_Path]" />
+            <ui:WriteCell Cell="[&quot;K&quot;+tracker_Count]" DisplayName="Reason Of Failure- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_27" SheetName="Processing_Log" Text="Upload sheet is blank" WorkbookPath="[in_Audit_Log_Path]" />
+            <ui:WriteCell Cell="[&quot;L&quot;+tracker_Count]" DisplayName="Reason Of Failure- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_39" SheetName="Processing_Log" Text="[in_Country_Code]" WorkbookPath="[in_Audit_Log_Path]" />
+            <ui:ReadTextFile Content="[business_Exception_Template]" DisplayName="Read Text File" FileName="[in_Config(&quot;templates_Path&quot;).ToString+&quot;Business Exception.txt&quot;]" sap2010:WorkflowViewState.IdRef="ReadTextFile_3" />
+            <Assign sap2010:WorkflowViewState.IdRef="Assign_15">
+              <Assign.To>
+                <OutArgument x:TypeArguments="ui:GenericValue">[error_Message_Deatils]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="ui:GenericValue">["Upload sheet is blank"]</InArgument>
+              </Assign.Value>
+            </Assign>
+            <ui:SendOutlookMail Account="{x:Null}" Bcc="{x:Null}" Cc="{x:Null}" MailMessage="{x:Null}" TimeoutMS="{x:Null}" Body="[string.Format(business_Exception_Template,error_Message_Deatils,in_Gl_Email)]" DisplayName="Send Outlook Mail Message" sap2010:WorkflowViewState.IdRef="SendOutlookMail_3" IsBodyHtml="True" IsDraft="False" Subject="[&quot;JV Business Exception : &quot;+in_CompanyCode.ToString +&quot; : &quot;+subject]" To="[in_Gl_Email]">
+              <ui:SendOutlookMail.Files>
+                <scg:List x:TypeArguments="InArgument(x:String)" Capacity="4">
+                  <InArgument x:TypeArguments="x:String">[in_Template_Path]</InArgument>
+                </scg:List>
+              </ui:SendOutlookMail.Files>
+            </ui:SendOutlookMail>
+          </Sequence>
+          <Throw Exception="[new businessruleexception(in_CompanyCode)]" sap2010:WorkflowViewState.IdRef="Throw_6" />
+        </Sequence>
+      </If.Then>
+      <If.Else>
+        <Sequence DisplayName="Upload shett check Sequence" sap2010:WorkflowViewState.IdRef="Sequence_41">
+          <Sequence DisplayName="Upload sheet Check Sequence" sap2010:WorkflowViewState.IdRef="Sequence_34">
+            <Sequence.Variables>
+              <Variable x:TypeArguments="ui:GenericValue" Name="xlspath1" />
+            </Sequence.Variables>
+            <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_18" Level="Info" Message="[&quot;Upload sheet created successfully..&quot;]" />
+            <ui:CloseApplication ContinueOnError="True" DisplayName="Close Application 'Excel'" sap2010:WorkflowViewState.IdRef="CloseApplication_4">
+              <ui:CloseApplication.Target>
+                <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" InformativeScreenshot="3855fbc207afae4e94bbbdcce4096c27" Selector="&lt;wnd app='excel.exe' cls='XLMAIN' title='*' /&gt;" TimeoutMS="2000" WaitForReady="INTERACTIVE" />
+              </ui:CloseApplication.Target>
+            </ui:CloseApplication>
+            <Delay Duration="00:00:02" sap2010:WorkflowViewState.IdRef="Delay_4" />
+            <Assign DisplayName="Assign - out xls path" sap2010:WorkflowViewState.IdRef="Assign_16">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:String">[out_Xlspath]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:String">[in_Template_Path.Substring(0,in_Template_Path.Length-4)+"xls"]</InArgument>
+              </Assign.Value>
+            </Assign>
+            <ui:InvokeCode ContinueOnError="{x:Null}" Code="Try&#xA; &#xA; Dim excel As Microsoft.Office.Interop.Excel.Application&#xA; Dim wb As Microsoft.Office.Interop.Excel.Workbook &#xA; excel = New Microsoft.Office.Interop.Excel.ApplicationClass&#xA; wb = excel.Workbooks.Open(macroEnabledJVTemplatePath)&#xA; excel.Visible=True&#xA; wb.SaveAs(targetXLSFilePath)&#xA; wb.Close()&#xA; excel.Quit()&#xA;Catch es As System.Exception&#xA; System.Windows.MessageBox.Show(es.Message)&#xA;End Try&#xA;" DisplayName="Invoke Code -  generate xls file" sap2010:WorkflowViewState.IdRef="InvokeCode_2">
+              <ui:InvokeCode.Arguments>
+                <InArgument x:TypeArguments="x:String" x:Key="macroEnabledJVTemplatePath">[in_Template_Path]</InArgument>
+                <InArgument x:TypeArguments="x:String" x:Key="targetXLSFilePath">[out_Xlspath]</InArgument>
+              </ui:InvokeCode.Arguments>
+            </ui:InvokeCode>
+            <ui:Delete ContinueOnError="True" sap2010:WorkflowViewState.IdRef="Delete_1" Path="[in_Template_Path]" />
+            <ui:SaveMailAttachments Attachments="{x:Null}" DisplayName="Save Attachments In .xlsm Format" Filter=".*(.XLSM|.xlsm)" FolderPath="[in_Config(&quot;shared_Folder_Path_For_Attachments&quot;).ToString+in_Transaction_Queue_Item_Mails_Data.SpecificContent(&quot;mail_Folder_Count&quot;).ToString+&quot;\&quot;]" sap2010:WorkflowViewState.IdRef="SaveMailAttachments_1" Message="[in_Transaction_Item]" />
+          </Sequence>
+          <If Condition="[out_Xlspath.Count&gt;=127]" DisplayName="If - xls path is more than 128 characters" sap2010:WorkflowViewState.IdRef="If_7">
+            <If.Then>
+              <Sequence DisplayName="Change length Sequence" sap2010:WorkflowViewState.IdRef="Sequence_40">
+                <Sequence.Variables>
+                  <Variable x:TypeArguments="ui:GenericValue" Name="xls_File_Name" />
+                  <Variable x:TypeArguments="ui:GenericValue" Name="rename_Xls_Path" />
+                </Sequence.Variables>
+                <Assign DisplayName="Assign - xls name" sap2010:WorkflowViewState.IdRef="Assign_18">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="ui:GenericValue">[xls_File_Name]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="ui:GenericValue">[out_Xlspath.Replace(".xls","")]</InArgument>
+                  </Assign.Value>
+                </Assign>
+                <Assign DisplayName="Assign - ranamed xls" sap2010:WorkflowViewState.IdRef="Assign_20">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="ui:GenericValue">[rename_Xls_Path]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="ui:GenericValue">[out_Xlspath]</InArgument>
+                  </Assign.Value>
+                </Assign>
+                <Assign DisplayName="Assign - out xls" sap2010:WorkflowViewState.IdRef="Assign_21">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="x:String">[out_Xlspath]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="x:String">[xls_File_Name.Substring(0,122) +".xls"]</InArgument>
+                  </Assign.Value>
+                </Assign>
+                <InvokeMethod DisplayName="Invoke Method - renamed xls" sap2010:WorkflowViewState.IdRef="InvokeMethod_1" MethodName="Move" TargetType="si:Directory">
+                  <InArgument x:TypeArguments="x:String">[rename_Xls_Path]</InArgument>
+                  <InArgument x:TypeArguments="x:String">[out_Xlspath]</InArgument>
+                </InvokeMethod>
+              </Sequence>
+            </If.Then>
+          </If>
+        </Sequence>
+      </If.Else>
+    </If>
+    <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_20" Level="Info" Message="[&quot;Exitign run macro workflow&quot;]" />
+    <sads:DebugSymbol.Symbol>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</sads:DebugSymbol.Symbol>
+  </Sequence>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="LogMessage_19" sap:VirtualizedContainerService.HintSize="843,91" />
+      <sap2010:ViewStateData Id="Assign_9" sap:VirtualizedContainerService.HintSize="843,60" />
+      <sap2010:ViewStateData Id="Assign_10" sap:VirtualizedContainerService.HintSize="843,60" />
+      <sap2010:ViewStateData Id="Assign_11" sap:VirtualizedContainerService.HintSize="843,60" />
+      <sap2010:ViewStateData Id="MaximizeWindow_2" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_27" sap:VirtualizedContainerService.HintSize="222,146">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="WindowScope_2" sap:VirtualizedContainerService.HintSize="314,51">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Click_6" sap:VirtualizedContainerService.HintSize="314,106" />
+      <sap2010:ViewStateData Id="TypeInto_1" sap:VirtualizedContainerService.HintSize="314,134" />
+      <sap2010:ViewStateData Id="ClickImage_3" sap:VirtualizedContainerService.HintSize="314,106" />
+      <sap2010:ViewStateData Id="Click_7" sap:VirtualizedContainerService.HintSize="314,106" />
+      <sap2010:ViewStateData Id="Click_8" sap:VirtualizedContainerService.HintSize="314,106" />
+      <sap2010:ViewStateData Id="Delay_2" sap:VirtualizedContainerService.HintSize="314,22" />
+      <sap2010:ViewStateData Id="LogMessage_14" sap:VirtualizedContainerService.HintSize="314,91" />
+      <sap2010:ViewStateData Id="Sequence_28" sap:VirtualizedContainerService.HintSize="336,1126">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="ExcelApplicationScope_7" sap:VirtualizedContainerService.HintSize="843,1275">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsAnnotationDocked">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="CloseApplication_3" sap:VirtualizedContainerService.HintSize="314,106">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Delay_3" sap:VirtualizedContainerService.HintSize="314,22" />
+      <sap2010:ViewStateData Id="ReadCell_3" sap:VirtualizedContainerService.HintSize="314,87">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="LogMessage_15" sap:VirtualizedContainerService.HintSize="314,91" />
+      <sap2010:ViewStateData Id="Sequence_29" sap:VirtualizedContainerService.HintSize="336,550">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="LogMessage_16" sap:VirtualizedContainerService.HintSize="403,91" />
+      <sap2010:ViewStateData Id="ReadRange_3" sap:VirtualizedContainerService.HintSize="381,87" />
+      <sap2010:ViewStateData Id="Assign_12" sap:VirtualizedContainerService.HintSize="381,60" />
+      <sap2010:ViewStateData Id="WriteCell_28" sap:VirtualizedContainerService.HintSize="381,115" />
+      <sap2010:ViewStateData Id="WriteCell_10" sap:VirtualizedContainerService.HintSize="381,115" />
+      <sap2010:ViewStateData Id="WriteCell_29" sap:VirtualizedContainerService.HintSize="381,115" />
+      <sap2010:ViewStateData Id="WriteCell_12" sap:VirtualizedContainerService.HintSize="381,115" />
+      <sap2010:ViewStateData Id="WriteCell_30" sap:VirtualizedContainerService.HintSize="381,115" />
+      <sap2010:ViewStateData Id="WriteCell_15" sap:VirtualizedContainerService.HintSize="381,115" />
+      <sap2010:ViewStateData Id="WriteCell_16" sap:VirtualizedContainerService.HintSize="381,115" />
+      <sap2010:ViewStateData Id="WriteCell_31" sap:VirtualizedContainerService.HintSize="381,115" />
+      <sap2010:ViewStateData Id="WriteCell_32" sap:VirtualizedContainerService.HintSize="381,115" />
+      <sap2010:ViewStateData Id="WriteCell_17" sap:VirtualizedContainerService.HintSize="381,115" />
+      <sap2010:ViewStateData Id="WriteCell_18" sap:VirtualizedContainerService.HintSize="381,115" />
+      <sap2010:ViewStateData Id="WriteCell_38" sap:VirtualizedContainerService.HintSize="381,115" />
+      <sap2010:ViewStateData Id="ReadTextFile_2" sap:VirtualizedContainerService.HintSize="381,59" />
+      <sap2010:ViewStateData Id="Assign_13" sap:VirtualizedContainerService.HintSize="381,60" />
+      <sap2010:ViewStateData Id="SendOutlookMail_2" sap:VirtualizedContainerService.HintSize="381,145" />
+      <sap2010:ViewStateData Id="Sequence_30" sap:VirtualizedContainerService.HintSize="403,2555">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Throw_5" sap:VirtualizedContainerService.HintSize="403,22" />
+      <sap2010:ViewStateData Id="Sequence_31" sap:VirtualizedContainerService.HintSize="425,2872">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Catch`1_2" sap:VirtualizedContainerService.HintSize="431,2941">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="TryCatch_2" sap:VirtualizedContainerService.HintSize="843,3801">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+            <x:Boolean x:Key="IsAnnotationDocked">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="LogMessage_17" sap:VirtualizedContainerService.HintSize="438,91" />
+      <sap2010:ViewStateData Id="ReadRange_4" sap:VirtualizedContainerService.HintSize="416,87" />
+      <sap2010:ViewStateData Id="Assign_14" sap:VirtualizedContainerService.HintSize="416,60" />
+      <sap2010:ViewStateData Id="WriteCell_33" sap:VirtualizedContainerService.HintSize="416,115" />
+      <sap2010:ViewStateData Id="WriteCell_19" sap:VirtualizedContainerService.HintSize="416,115" />
+      <sap2010:ViewStateData Id="WriteCell_34" sap:VirtualizedContainerService.HintSize="416,115" />
+      <sap2010:ViewStateData Id="WriteCell_21" sap:VirtualizedContainerService.HintSize="416,115" />
+      <sap2010:ViewStateData Id="WriteCell_35" sap:VirtualizedContainerService.HintSize="416,115" />
+      <sap2010:ViewStateData Id="WriteCell_24" sap:VirtualizedContainerService.HintSize="416,115" />
+      <sap2010:ViewStateData Id="WriteCell_25" sap:VirtualizedContainerService.HintSize="416,115" />
+      <sap2010:ViewStateData Id="WriteCell_36" sap:VirtualizedContainerService.HintSize="416,115" />
+      <sap2010:ViewStateData Id="WriteCell_37" sap:VirtualizedContainerService.HintSize="416,115" />
+      <sap2010:ViewStateData Id="WriteCell_26" sap:VirtualizedContainerService.HintSize="416,115" />
+      <sap2010:ViewStateData Id="WriteCell_27" sap:VirtualizedContainerService.HintSize="416,115" />
+      <sap2010:ViewStateData Id="WriteCell_39" sap:VirtualizedContainerService.HintSize="416,115" />
+      <sap2010:ViewStateData Id="ReadTextFile_3" sap:VirtualizedContainerService.HintSize="416,59" />
+      <sap2010:ViewStateData Id="Assign_15" sap:VirtualizedContainerService.HintSize="416,60" />
+      <sap2010:ViewStateData Id="SendOutlookMail_3" sap:VirtualizedContainerService.HintSize="416,145" />
+      <sap2010:ViewStateData Id="Sequence_32" sap:VirtualizedContainerService.HintSize="438,2555">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Throw_6" sap:VirtualizedContainerService.HintSize="438,22" />
+      <sap2010:ViewStateData Id="Sequence_33" sap:VirtualizedContainerService.HintSize="460,2872">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="LogMessage_18" sap:VirtualizedContainerService.HintSize="314,91" />
+      <sap2010:ViewStateData Id="CloseApplication_4" sap:VirtualizedContainerService.HintSize="314,106" />
+      <sap2010:ViewStateData Id="Delay_4" sap:VirtualizedContainerService.HintSize="314,22" />
+      <sap2010:ViewStateData Id="Assign_16" sap:VirtualizedContainerService.HintSize="314,60" />
+      <sap2010:ViewStateData Id="InvokeCode_2" sap:VirtualizedContainerService.HintSize="314,164">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Delete_1" sap:VirtualizedContainerService.HintSize="314,22" />
+      <sap2010:ViewStateData Id="SaveMailAttachments_1" sap:VirtualizedContainerService.HintSize="314,51">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Sequence_34" sap:VirtualizedContainerService.HintSize="336,880">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_18" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_20" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_21" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="InvokeMethod_1" sap:VirtualizedContainerService.HintSize="242,132" />
+      <sap2010:ViewStateData Id="Sequence_40" sap:VirtualizedContainerService.HintSize="264,556">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_7" sap:VirtualizedContainerService.HintSize="200,51" />
+      <sap2010:ViewStateData Id="Sequence_41" sap:VirtualizedContainerService.HintSize="358,1095">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_6" sap:VirtualizedContainerService.HintSize="843,3020">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+            <x:Boolean x:Key="IsAnnotationDocked">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="LogMessage_20" sap:VirtualizedContainerService.HintSize="843,91" />
+      <sap2010:ViewStateData Id="Sequence_35" sap:VirtualizedContainerService.HintSize="865,8862">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+            <x:Boolean x:Key="IsAnnotationDocked">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Main_1" sap:VirtualizedContainerService.HintSize="905,8942">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="ShouldCollapseAll">False</x:Boolean>
+            <x:Boolean x:Key="ShouldExpandAll">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>
