@@ -35,7 +35,9 @@
     <x:Property Name="in_Doc_Header" Type="InArgument(x:String)" />
     <x:Property Name="in_Country_Code" Type="InArgument(x:String)" />
     <x:Property Name="in_Document_Date_1" Type="InArgument(x:String)" />
+    <x:Property Name="In_XLS_File_Path" Type="InArgument(x:String)" />
     <x:Property Name="out_Zip_Size" Type="OutArgument(x:String)" />
+    <x:Property Name="out_Mail_Size" Type="OutArgument(x:Int64)" />
   </x:Members>
   <mva:VisualBasic.Settings>
     <x:Null />
@@ -114,6 +116,7 @@
       <Variable x:TypeArguments="ui:GenericValue" Name="document_Number" />
       <Variable x:TypeArguments="x:String" Name="extractPath" />
       <Variable x:TypeArguments="ui:GenericValue" Name="tracker_Count" />
+      <Variable x:TypeArguments="x:Int64" Name="zip_Size_in_bytes" />
     </Sequence.Variables>
     <Sequence sap2010:Annotation.AnnotationText="Assign Sequence" DisplayName="Assign Sequence" sap2010:WorkflowViewState.IdRef="Sequence_43">
       <Assign sap2010:WorkflowViewState.IdRef="Assign_95">
@@ -404,7 +407,17 @@
         <Variable x:TypeArguments="ui:GenericValue" Name="replaced_File_path" />
       </Sequence.Variables>
       <ui:SaveMail DisplayName="Save Mail Message" FilePath="[in_Config(&quot;shared_Folder_Path_For_Attachments&quot;).ToString+in_Transaction_Queue_Item_Mails_Data.SpecificContent(&quot;mail_Folder_Count&quot;).ToString+&quot;\&quot;+&quot;Mail.eml&quot;]" sap2010:WorkflowViewState.IdRef="SaveMail_9" MailMessage="[in_Mail_Message]" />
+      <Assign sap2010:WorkflowViewState.IdRef="Assign_104">
+        <Assign.To>
+          <OutArgument x:TypeArguments="x:Int64">[out_Mail_Size]</OutArgument>
+        </Assign.To>
+        <Assign.Value>
+          <InArgument x:TypeArguments="x:Int64">[new fileinfo(in_Config("shared_Folder_Path_For_Attachments").ToString+in_Transaction_Queue_Item_Mails_Data.SpecificContent("mail_Folder_Count").ToString+"\"+"Mail.eml").Length]</InArgument>
+        </Assign.Value>
+      </Assign>
       <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_35" Level="Info" Message="[&quot;Original Email Saved&quot;]" />
+      <ui:Delete ContinueOnError="True" sap2010:WorkflowViewState.IdRef="Delete_5" Path="[In_XLS_File_Path]" />
+      <ui:Delete ContinueOnError="True" sap2010:WorkflowViewState.IdRef="Delete_6" Path="[in_Template_Path]" />
       <Assign DisplayName="Assign - Folder path" sap2010:WorkflowViewState.IdRef="Assign_89">
         <Assign.To>
           <OutArgument x:TypeArguments="ui:GenericValue">[folder_Path]</OutArgument>
@@ -458,7 +471,6 @@
       <Sequence DisplayName="Zipping Files" sap2010:WorkflowViewState.IdRef="Sequence_46">
         <Sequence.Variables>
           <Variable x:TypeArguments="x:String" Name="zipPath" />
-          <Variable x:TypeArguments="x:Int64" Name="zip_Size_in_bytes" />
         </Sequence.Variables>
         <Assign sap2010:WorkflowViewState.IdRef="Assign_99">
           <Assign.To>
@@ -480,24 +492,24 @@
           <InArgument x:TypeArguments="x:String">[zipPath]</InArgument>
           <InArgument x:TypeArguments="x:String">[extractPath]</InArgument>
         </InvokeMethod>
-        <Assign>
+        <Assign sap2010:WorkflowViewState.IdRef="Assign_102">
           <Assign.To>
             <OutArgument x:TypeArguments="x:Int64">[zip_Size_in_bytes]</OutArgument>
           </Assign.To>
           <Assign.Value>
             <InArgument x:TypeArguments="x:Int64">[new fileinfo(extractPath).Length]</InArgument>
           </Assign.Value>
-          <sap2010:WorkflowViewState.IdRef>Assign_104</sap2010:WorkflowViewState.IdRef>
         </Assign>
-        <Assign>
+        <Assign sap2010:WorkflowViewState.IdRef="Assign_103">
           <Assign.To>
             <OutArgument x:TypeArguments="x:String">[out_Zip_Size]</OutArgument>
           </Assign.To>
           <Assign.Value>
             <InArgument x:TypeArguments="x:String">[(convert.ToInt64(Convert.ToDouble(zip_Size_in_bytes) / 1024)).ToString]</InArgument>
           </Assign.Value>
-          <sap2010:WorkflowViewState.IdRef>Assign_105</sap2010:WorkflowViewState.IdRef>
         </Assign>
+        <ui:CreateDirectory ContinueOnError="{x:Null}" DisplayName="Create Directory" sap2010:WorkflowViewState.IdRef="CreateDirectory_1" Path="[in_Config(&quot;Local_Path_to_Shared_Path&quot;).ToString+year+&quot;\&quot;+month+&quot;\&quot;+in_Company_Code+&quot;\&quot;+&quot;Success&quot;+&quot;\&quot;]" />
+        <ui:MoveFile ContinueOnError="{x:Null}" Destination="[in_Config(&quot;Local_Path_to_Shared_Path&quot;).ToString+year+&quot;\&quot;+month+&quot;\&quot;+in_Company_Code+&quot;\&quot;+&quot;Success&quot;+&quot;\&quot;]" DisplayName="Move File" sap2010:WorkflowViewState.IdRef="MoveFile_1" Overwrite="False" Path="[extractPath]" />
       </Sequence>
       <ui:Delete ContinueOnError="True" sap2010:WorkflowViewState.IdRef="Delete_3" Path="[new_Path]" />
       <ui:Delete ContinueOnError="True" sap2010:WorkflowViewState.IdRef="Delete_4" Path="[shared_DrivePath]" />
@@ -539,13 +551,13 @@
           <ui:WriteCell Cell="[&quot;K&quot;+tracker_Count]" DisplayName="Reason Of Failure- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_17" SheetName="Processing_Log" Text="Transaction Successfull" WorkbookPath="[in_Audit_Log_Path]" />
           <ui:WriteCell Cell="[&quot;L&quot;+tracker_Count]" DisplayName="Reason Of Failure- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_18" SheetName="Processing_Log" Text="[in_Country_Code]" WorkbookPath="[in_Audit_Log_Path]" />
         </Sequence>
-        <ui:WriteCell Cell="[&quot;M&quot;+tracker_Count]" DisplayName="Request Status- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_5" SheetName="Processing_Log" Text="[shared_DrivePath+&quot;.zip&quot;]" WorkbookPath="[in_Audit_Log_Path]" />
+        <ui:WriteCell Cell="[&quot;M&quot;+tracker_Count]" DisplayName="Request Status- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_5" SheetName="Processing_Log" Text="[in_Config(&quot;Local_Path_to_Shared_Path&quot;).ToString+year+&quot;\&quot;+month+&quot;\&quot;+in_Company_Code+&quot;\&quot;+&quot;Success&quot;+&quot;\&quot;+document_Number+&quot;.zip&quot;]" WorkbookPath="[in_Audit_Log_Path]" />
         <ui:WriteCell Cell="[&quot;O&quot;+tracker_Count]" DisplayName="Request Status- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_6" SheetName="Processing_Log" Text="[tracker_Count-1]" WorkbookPath="[in_Audit_Log_Path]" />
         <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_38" Level="Info" Message="[&quot;Processing Sl. No :- &quot;+ (tracker_Count-1)]" />
         <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_37" Level="Info" Message="[&quot;Transaction successful&quot;]" />
       </Sequence>
     </Sequence>
-    <sads:DebugSymbol.Symbol>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</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>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</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
@@ -909,14 +921,15 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="SaveMail_9" sap:VirtualizedContainerService.HintSize="358,51">
+      <sap2010:ViewStateData Id="SaveMail_9" sap:VirtualizedContainerService.HintSize="358,87">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_104" sap:VirtualizedContainerService.HintSize="358,60" />
       <sap2010:ViewStateData Id="LogMessage_35" sap:VirtualizedContainerService.HintSize="358,91">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
@@ -924,6 +937,8 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Delete_5" sap:VirtualizedContainerService.HintSize="358,22" />
+      <sap2010:ViewStateData Id="Delete_6" sap:VirtualizedContainerService.HintSize="358,22" />
       <sap2010:ViewStateData Id="Assign_89" sap:VirtualizedContainerService.HintSize="358,60" />
       <sap2010:ViewStateData Id="Assign_90" sap:VirtualizedContainerService.HintSize="358,60" />
       <sap2010:ViewStateData Id="InvokeMethod_5" sap:VirtualizedContainerService.HintSize="358,132" />
@@ -942,9 +957,11 @@
       <sap2010:ViewStateData Id="Assign_99" sap:VirtualizedContainerService.HintSize="242,60" />
       <sap2010:ViewStateData Id="Assign_100" sap:VirtualizedContainerService.HintSize="242,60" />
       <sap2010:ViewStateData Id="InvokeMethod_9" sap:VirtualizedContainerService.HintSize="242,132" />
-      <sap2010:ViewStateData Id="Assign_104" sap:VirtualizedContainerService.HintSize="242,60" />
-      <sap2010:ViewStateData Id="Assign_105" sap:VirtualizedContainerService.HintSize="242,60" />
-      <sap2010:ViewStateData Id="Sequence_46" sap:VirtualizedContainerService.HintSize="358,656">
+      <sap2010:ViewStateData Id="Assign_102" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_103" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="CreateDirectory_1" sap:VirtualizedContainerService.HintSize="242,22" />
+      <sap2010:ViewStateData Id="MoveFile_1" sap:VirtualizedContainerService.HintSize="242,22" />
+      <sap2010:ViewStateData Id="Sequence_46" sap:VirtualizedContainerService.HintSize="358,780">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -1078,7 +1095,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_41" sap:VirtualizedContainerService.HintSize="960,5023">
+      <sap2010:ViewStateData Id="Sequence_41" sap:VirtualizedContainerService.HintSize="960,5407">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -1087,7 +1104,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_42" sap:VirtualizedContainerService.HintSize="982,9058">
+      <sap2010:ViewStateData Id="Sequence_42" sap:VirtualizedContainerService.HintSize="982,9442">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -1096,7 +1113,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="SendMailand_MoveToArchiveFolder_1" sap:VirtualizedContainerService.HintSize="1022,9138">
+      <sap2010:ViewStateData Id="SendMailand_MoveToArchiveFolder_1" sap:VirtualizedContainerService.HintSize="1022,9522">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="ShouldExpandAll">False</x:Boolean>
