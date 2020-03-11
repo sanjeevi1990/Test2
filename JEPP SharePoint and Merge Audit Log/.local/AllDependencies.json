@@ -1030,15 +1030,15 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\SVC-0990559\\.nuget\\packages\\": {}
+    "C:\\Users\\DMK2267\\.nuget\\packages\\": {}
   },
   "project": {
     "restore": {
       "projectUniqueName": "JEPP_Merge_Audit_Log_and_Share_Point_RE_Framework",
       "projectName": "JEPP_Merge_Audit_Log_and_Share_Point_RE_Framework",
-      "projectPath": "C:\\Users\\SVC-0990559\\Music\\JEPP Multibot(Dispacher and Performer)\\JEPP SharePoint and Merge Audit Log\\.local",
-      "packagesPath": "C:\\Users\\SVC-0990559\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\SVC-0990559\\Music\\JEPP Multibot(Dispacher and Performer)\\JEPP SharePoint and Merge Audit Log\\.local"
+      "projectPath": "C:\\Users\\DMK2267\\Desktop\\JEPP CRS\\2\\JEPP SharePoint and Merge Audit Log\\.local",
+      "packagesPath": "C:\\Users\\DMK2267\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\DMK2267\\Desktop\\JEPP CRS\\2\\JEPP SharePoint and Merge Audit Log\\.local"
     },
     "frameworks": {
       "net461": {
