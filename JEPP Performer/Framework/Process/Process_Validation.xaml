@@ -29,6 +29,7 @@
     <x:Property Name="in_CC_Email" Type="InArgument(x:String)" />
     <x:Property Name="in_Transaction_Queue_Item_Mails_Data" Type="InArgument(ui:QueueItem)" />
     <x:Property Name="in_Document_Date" Type="InArgument(x:String)" />
+    <x:Property Name="in_dtFilteredEnteries" Type="InArgument(sd:DataTable)" />
   </x:Members>
   <mva:VisualBasic.Settings>
     <x:Null />
@@ -135,36 +136,54 @@
             <InArgument x:TypeArguments="ui:GenericValue">[in_TransactionItem.Subject]</InArgument>
           </Assign.Value>
         </Assign>
-        <ui:ReadCell Cell="B23" DisplayName="Get Company Code From Template" sap2010:WorkflowViewState.IdRef="ReadCell_6" SheetName="Journal Entry" WorkbookPath="[in_Template_Path]">
-          <ui:ReadCell.Result>
-            <OutArgument x:TypeArguments="ui:GenericValue">[companyCode]</OutArgument>
-          </ui:ReadCell.Result>
-        </ui:ReadCell>
-        <ui:ReadCell Cell="E23" DisplayName="Get Date From Template" sap2010:WorkflowViewState.IdRef="ReadCell_7" SheetName="Journal Entry" WorkbookPath="[in_Template_Path]">
-          <ui:ReadCell.Result>
+        <Assign DisplayName="Document Date Assign" sap2010:WorkflowViewState.IdRef="Assign_41">
+          <Assign.To>
             <OutArgument x:TypeArguments="ui:GenericValue">[documentDate]</OutArgument>
-          </ui:ReadCell.Result>
-        </ui:ReadCell>
-        <ui:ReadCell Cell="F23" DisplayName="Get Currency From Template" sap2010:WorkflowViewState.IdRef="ReadCell_8" SheetName="Journal Entry" WorkbookPath="[in_Template_Path]">
-          <ui:ReadCell.Result>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="ui:GenericValue">[in_Config("Library_Document_Date").ToString]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Assign Company code" sap2010:WorkflowViewState.IdRef="Assign_42">
+          <Assign.To>
+            <OutArgument x:TypeArguments="ui:GenericValue">[companyCode]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="ui:GenericValue">[in_Config("companyCode").ToString]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Assign currency" sap2010:WorkflowViewState.IdRef="Assign_43">
+          <Assign.To>
             <OutArgument x:TypeArguments="ui:GenericValue">[currency]</OutArgument>
-          </ui:ReadCell.Result>
-        </ui:ReadCell>
-        <ui:ReadCell Cell="J11" DisplayName="Get Document Type From Template" sap2010:WorkflowViewState.IdRef="ReadCell_9" SheetName="Journal Entry" WorkbookPath="[in_Template_Path]">
-          <ui:ReadCell.Result>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="ui:GenericValue">[in_Config("currency").ToString]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Assign documentType" sap2010:WorkflowViewState.IdRef="Assign_44">
+          <Assign.To>
             <OutArgument x:TypeArguments="ui:GenericValue">[documentType]</OutArgument>
-          </ui:ReadCell.Result>
-        </ui:ReadCell>
-        <ui:ReadCell Cell="B34" DisplayName="Get G/L Account Entry From Template" sap2010:WorkflowViewState.IdRef="ReadCell_10" SheetName="Journal Entry" WorkbookPath="[in_Template_Path]">
-          <ui:ReadCell.Result>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="ui:GenericValue">[in_Config("documentType").ToString]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Assign valueInGLAccountColumn" sap2010:WorkflowViewState.IdRef="Assign_45">
+          <Assign.To>
             <OutArgument x:TypeArguments="ui:GenericValue">[valueInGLAccountColumn]</OutArgument>
-          </ui:ReadCell.Result>
-        </ui:ReadCell>
-        <ui:ReadCell Cell="E28" DisplayName="Get Total Amount From Template" sap2010:WorkflowViewState.IdRef="ReadCell_11" SheetName="Journal Entry" WorkbookPath="[in_Template_Path]">
-          <ui:ReadCell.Result>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="ui:GenericValue">[in_Config("valueInGLAccountColumn").ToString]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Assign valueInTotalAmountField" sap2010:WorkflowViewState.IdRef="Assign_46">
+          <Assign.To>
             <OutArgument x:TypeArguments="ui:GenericValue">[valueInTotalAmountField]</OutArgument>
-          </ui:ReadCell.Result>
-        </ui:ReadCell>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="ui:GenericValue">[in_Config("valueInTotalAmountField").ToString]</InArgument>
+          </Assign.Value>
+        </Assign>
         <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_11" Level="Info" Message="[&quot;Values found in template:: &quot;+&#xA;&quot;Company Code-&gt;&quot;+companyCode+&#xA;&quot;Document Date-&gt;&quot;+documentDate+&#xA;&quot; Value in total amount-&gt;&quot;+ valueInTotalAmountField+&#xA;&quot;Currency--&gt;&quot;+currency+&#xA;&quot;Document Type&quot;+documentType+&#xA;&quot;G/L Account Entry-&gt;&quot;+valueInGLAccountColumn]" />
       </Sequence>
       <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" ContinueOnError="True" DisplayName="Click 'Button'" sap2010:WorkflowViewState.IdRef="Click_1" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="True">
@@ -248,10 +267,8 @@
     </If>
     <Sequence sap2010:Annotation.AnnotationText="Validate amount and PK value Sequence" DisplayName="Validate amount and PK value Sequence" sap2010:WorkflowViewState.IdRef="Sequence_37">
       <Sequence.Variables>
-        <Variable x:TypeArguments="sd:DataTable" Name="dtJournalEnteries" />
         <Variable x:TypeArguments="x:String" Name="dt" />
         <Variable x:TypeArguments="sd:DataTable" Name="dt2" />
-        <Variable x:TypeArguments="sd:DataTable" Name="dtFilteredEnteries" />
         <Variable x:TypeArguments="x:String" Name="dtTest" />
         <Variable x:TypeArguments="ui:GenericValue" Name="sap_Document_Date" />
         <Variable x:TypeArguments="s:String[]" Name="document_Date_array" />
@@ -323,25 +340,7 @@
         </Assign>
         <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_20" Level="Info" Message="[&quot;checking amount  and pk values&quot;]" />
       </Sequence>
-      <Parallel sap2010:WorkflowViewState.IdRef="Parallel_2">
-        <ui:ReadRange AddHeaders="False" DataTable="[dtJournalEnteries]" DisplayName="Get Journal Entries" sap2010:WorkflowViewState.IdRef="ReadRange_7" Range="B34" SheetName="Journal Entry" WorkbookPath="[in_Template_Path]" />
-        <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" ContinueOnError="True" DisplayName="Click 'Button'" sap2010:WorkflowViewState.IdRef="Click_2" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="True">
-          <ui:Click.CursorPosition>
-            <ui:CursorPosition Position="Center">
-              <ui:CursorPosition.OffsetX>
-                <InArgument x:TypeArguments="x:Int32" />
-              </ui:CursorPosition.OffsetX>
-              <ui:CursorPosition.OffsetY>
-                <InArgument x:TypeArguments="x:Int32" />
-              </ui:CursorPosition.OffsetY>
-            </ui:CursorPosition>
-          </ui:Click.CursorPosition>
-          <ui:Click.Target>
-            <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" InformativeScreenshot="e8e099461adae29af49647fef2f810c9" Selector="&lt;wnd app='excel.exe' cls='#32770' title='Microsoft Excel' /&gt;&lt;wnd omit:ctrlid='2' title='Do&amp;amp;n&amp;apos;t Update' /&gt;" TimeoutMS="2000" WaitForReady="INTERACTIVE" />
-          </ui:Click.Target>
-        </ui:Click>
-      </Parallel>
-      <ui:FilterDataTable DataTable="[dtJournalEnteries]" DisplayName="Filter Journal Entries" FilterRowsMode="Remove" sap2010:WorkflowViewState.IdRef="FilterDataTable_3" OutputDataTable="[dtFilteredEnteries]" SelectColumnsMode="Keep">
+      <ui:FilterDataTable DataTable="[dtJournalEnteries]" DisplayName="Filter Journal Entries" FilterRowsMode="Remove" sap2010:WorkflowViewState.IdRef="FilterDataTable_3" OutputDataTable="[in_dtFilteredEnteries]" SelectColumnsMode="Keep">
         <ui:FilterDataTable.Filters>
           <scg:List x:TypeArguments="ui:FilterOperationArgument" Capacity="4">
             <ui:FilterOperationArgument Operand="{x:Null}" BooleanOperator="And" Operator="EMPTY">
@@ -357,7 +356,7 @@
           </scg:List>
         </ui:FilterDataTable.SelectColumns>
       </ui:FilterDataTable>
-      <ui:ForEachRow CurrentIndex="{x:Null}" sap2010:Annotation.AnnotationText="Iterate Journal Entries" DataTable="[dtFilteredEnteries]" DisplayName="Iterate Journal Entries" sap2010:WorkflowViewState.IdRef="ForEachRow_3">
+      <ui:ForEachRow CurrentIndex="{x:Null}" sap2010:Annotation.AnnotationText="Iterate Journal Entries" DataTable="[in_dtFilteredEnteries]" DisplayName="Iterate Journal Entries" sap2010:WorkflowViewState.IdRef="ForEachRow_3">
         <ui:ForEachRow.Body>
           <ActivityAction x:TypeArguments="sd:DataRow">
             <ActivityAction.Argument>
@@ -534,7 +533,7 @@
       </ui:ForEachRow>
     </Sequence>
     <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_18" Level="Info" Message="[&quot;Exiting JV template validation workflow&quot;]" />
-    <sads:DebugSymbol.Symbol>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AgE/5wMX5wP1AQIBOegDF+gD7AECATPpAxfpA/ABAgEt6gMX6gOmAgIBJ+sDF+sD/gECASDsAxf2AycCAR/3Axf9AycCAR7+Axf+A/8BAgEZ/wMXhgQgAgEVhwQXjQQsAgEOjwQmjwRQAgEMjwNBjwNaAwHhAZIDHZIDTAMB4AGPA7wBjwPMAQMB3wGPA9oBjwPvAQMB3QGbA0mbA24DAdsBmANKmANZAwHZAZ4DKp4DSQMB1wGeA8IBngPGAQMB1gGeA6wBngO8AQMB1QGeA9QBngPpAQMB0wGfAyqfA0kDAdEBnwPBAZ8D0QEDAdABnwOrAZ8DuwEDAc8BnwPfAZ8D9AEDAc0BoAMqoANJAwHLAaADwQGgA9EBAwHKAaADqwGgA7sBAwHJAaAD3wGgA/QBAwHHAaEDKqEDSQMBxQGhA8ABoQPMAQMBxAGhA6oBoQO6AQMBwwGhA9oBoQPvAQMBwQGiAyqiA0kDAb8BogPAAaID0AEDAb4BogOqAaIDugEDAb0BogPeAaID8wEDAbsBowMqowNJAwG5AaMDwwGjA80BAwG4AaMDrQGjA70BAwG3AaMD2wGjA/ABAwG1AaQDKqQDSQMBswGkA8UBpAPRAQMBsgGkA68BpAO/AQMBsQGkA98BpAP0AQMBrwGlAyqlA0kDAa0BpQPAAaUDzwEDAawBpQOqAaUDugEDAasBpQPdAaUD8gEDAakBpgMqpgNJAwGnAaYDwgGmA8YBAwGmAaYDrAGmA7wBAwGlAaYD1AGmA+kBAwGjAacDKqcDSQMBoQGnA8IBpwPKAQMBoAGnA6wBpwO8AQMBnwGnA9gBpwPtAQMBnQGoAyqoA0kDAZsBqAPFAagDnwIDAZoBqAOvAagDvwEDAZkBqAOtAqgDwgIDAZcBqQMqqQNJAwGVAakDxQGpA9gBAwGTAakDrwGpA78BAwGSAakD5gGpA/sBAwGQAaoDdqoDywEDAY0BqgMwqgNPAwGLAbADSbADiAIDAYkBrQNKrQNhAwGHAbMDvQOzA8wDAwGEAbYDRLYDVgMBggGzA4wBswPcAQMBgQGzA+MCswO5AwMBgAHRA0HRA1oCAXLUAx3UA0wCAXHRA7wB0QPMAQIBcNED2gHRA+8BAgFu3QNJ3QNuAgFs2gNK2gNZAgFq4AMq4ANJAgFo4APCAeADxgECAWfgA6wB4AO8AQIBZuAD1AHgA+kBAgFk4QMq4QNJAgFi4QPBAeED0QECAWHhA6sB4QO7AQIBYOED3wHhA/QBAgFe4gMq4gNJAgFc4gPBAeID0QECAVviA6sB4gO7AQIBWuID3wHiA/QBAgFY4wMq4wNJAgFW4wPAAeMDzAECAVXjA6oB4wO6AQIBVOMD2gHjA+8BAgFS5AMq5ANJAgFQ5APAAeQD0AECAU/kA6oB5AO6AQIBTuQD3gHkA/MBAgFM5QMq5QNJAgFK5QPDAeUDzQECAUnlA60B5QO9AQIBSOUD2wHlA/ABAgFG5gMq5gNJAgFE5gPFAeYD0QECAUPmA68B5gO/AQIBQuYD3wHmA/QBAgFA5wMq5wNJAgE+5wPAAecDzwECAT3nA6oB5wO6AQIBPOcD3QHnA/IBAgE66AMq6ANJAgE46APCAegDxgECATfoA6wB6AO8AQIBNugD1AHoA+kBAgE06QMq6QNJAgEy6QPCAekDygECATHpA6wB6QO8AQIBMOkD2AHpA+0BAgEu6gMq6gNJAgEs6gPFAeoDgAICASvqA68B6gO/AQIBKuoDjgLqA6MCAgEo6wMq6wNJAgEm6wPFAesD2AECASTrA68B6wO/AQIBI+sD5gHrA/sBAgEh/gN2/gPLAQIBHP4DMP4DTwIBGoQESYQE0AECARiBBEqBBGECARaHBL0DhwTMAwIBE4oERIoEVgIBEYcEjAGHBNwBAgEQhwTjAocEuQMCAQ8=</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>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</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
@@ -542,49 +541,12 @@
       <sap2010:ViewStateData Id="Assign_12" sap:VirtualizedContainerService.HintSize="314,60" />
       <sap2010:ViewStateData Id="Assign_13" sap:VirtualizedContainerService.HintSize="314,60" />
       <sap2010:ViewStateData Id="Assign_14" sap:VirtualizedContainerService.HintSize="314,60" />
-      <sap2010:ViewStateData Id="ReadCell_6" sap:VirtualizedContainerService.HintSize="314,87">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsPinned">False</x:Boolean>
-            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="ReadCell_7" sap:VirtualizedContainerService.HintSize="314,87">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsPinned">False</x:Boolean>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="ReadCell_8" sap:VirtualizedContainerService.HintSize="314,87">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsPinned">False</x:Boolean>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="ReadCell_9" sap:VirtualizedContainerService.HintSize="314,87">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsPinned">False</x:Boolean>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="ReadCell_10" sap:VirtualizedContainerService.HintSize="314,87">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsPinned">False</x:Boolean>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="ReadCell_11" sap:VirtualizedContainerService.HintSize="314,87">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsPinned">False</x:Boolean>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_41" sap:VirtualizedContainerService.HintSize="314,60" />
+      <sap2010:ViewStateData Id="Assign_42" sap:VirtualizedContainerService.HintSize="314,60" />
+      <sap2010:ViewStateData Id="Assign_43" sap:VirtualizedContainerService.HintSize="314,60" />
+      <sap2010:ViewStateData Id="Assign_44" sap:VirtualizedContainerService.HintSize="314,60" />
+      <sap2010:ViewStateData Id="Assign_45" sap:VirtualizedContainerService.HintSize="314,60" />
+      <sap2010:ViewStateData Id="Assign_46" sap:VirtualizedContainerService.HintSize="314,60" />
       <sap2010:ViewStateData Id="LogMessage_11" sap:VirtualizedContainerService.HintSize="314,91">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
@@ -592,7 +554,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_27" sap:VirtualizedContainerService.HintSize="336,1277">
+      <sap2010:ViewStateData Id="Sequence_27" sap:VirtualizedContainerService.HintSize="336,1115">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -601,7 +563,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Click_1" sap:VirtualizedContainerService.HintSize="314,1277">
+      <sap2010:ViewStateData Id="Click_1" sap:VirtualizedContainerService.HintSize="314,1115">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsPinned">False</x:Boolean>
@@ -609,7 +571,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Parallel_1" sap:VirtualizedContainerService.HintSize="873,1323" />
+      <sap2010:ViewStateData Id="Parallel_1" sap:VirtualizedContainerService.HintSize="873,1161" />
       <sap2010:ViewStateData Id="LogMessage_12" sap:VirtualizedContainerService.HintSize="403,91">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
@@ -697,22 +659,6 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="ReadRange_7" sap:VirtualizedContainerService.HintSize="314,106">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsPinned">False</x:Boolean>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Click_2" sap:VirtualizedContainerService.HintSize="314,106">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsPinned">False</x:Boolean>
-            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Parallel_2" sap:VirtualizedContainerService.HintSize="851,152" />
       <sap2010:ViewStateData Id="FilterDataTable_3" sap:VirtualizedContainerService.HintSize="851,59">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
@@ -889,7 +835,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_37" sap:VirtualizedContainerService.HintSize="873,8666">
+      <sap2010:ViewStateData Id="Sequence_37" sap:VirtualizedContainerService.HintSize="873,8474">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -899,7 +845,7 @@
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="LogMessage_18" sap:VirtualizedContainerService.HintSize="873,91" />
-      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="895,13506">
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="895,13152">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -907,7 +853,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="ProcessTransaction_1" sap:VirtualizedContainerService.HintSize="935,13586">
+      <sap2010:ViewStateData Id="ProcessTransaction_1" sap:VirtualizedContainerService.HintSize="935,13232">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="ShouldExpandAll">True</x:Boolean>
