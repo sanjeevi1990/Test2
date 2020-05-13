@@ -119,9 +119,9 @@
             <ui:RetryScope.ActivityBody>
               <ActivityAction>
                 <Sequence DisplayName="Action" sap2010:WorkflowViewState.IdRef="Sequence_32">
-                  <ui:TypeInto DelayBefore="{x:Null}" DelayBetweenKeys="{x:Null}" DelayMS="{x:Null}" Activate="True" ClickBeforeTyping="False" DisplayName="Type into transaction code" EmptyField="False" sap2010:WorkflowViewState.IdRef="TypeInto_3" SendWindowMessages="False" SimulateType="False" Text="[&quot;/n&quot;+document_Overview_Tcode+ &quot;[k(enter)]&quot;]">
+                  <ui:TypeInto DelayBefore="{x:Null}" DelayBetweenKeys="{x:Null}" DelayMS="{x:Null}" Activate="True" ClickBeforeTyping="False" ContinueOnError="True" DisplayName="Type into transaction code" EmptyField="False" sap2010:WorkflowViewState.IdRef="TypeInto_3" SendWindowMessages="False" SimulateType="False" Text="[&quot;/n&quot;+document_Overview_Tcode+ &quot;[k(enter)]&quot;]">
                     <ui:TypeInto.Target>
-                      <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="9913039ab5489b182f4050320112e6b8" Selector="&lt;wnd app='saplogon.exe' cls='SAP_FRONTEND_SESSION' title='Batch Input: Session Overview' /&gt;&lt;sap id='tbar[0]/okcd' /&gt;" WaitForReady="INTERACTIVE" />
+                      <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="9913039ab5489b182f4050320112e6b8" Selector="&lt;wnd app='saplogon.exe' cls='SAP_FRONTEND_SESSION' title='*' /&gt;&lt;sap id='tbar[0]/okcd' /&gt;" WaitForReady="INTERACTIVE" />
                     </ui:TypeInto.Target>
                   </ui:TypeInto>
                   <ui:UiElementExists DisplayName="Element exists : &quot;Display Document&quot;" Exists="[display_Document]" sap2010:WorkflowViewState.IdRef="UiElementExists_7">
@@ -358,7 +358,7 @@
       </If.Else>
     </If>
     <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_13" Level="Info" Message="[&quot;Exiting document overview workflow&quot;]" />
-    <sads:DebugSymbol.Symbol>d1NEOlxLdW11ZGhhIERlc2t0b3BcSkVQUCBNYXlcSkVQUCBQZXJmb3JtZXJcRnJhbWV3b3JrXFByb2Nlc3NcRG9jdW1lbnRfT3ZlcnZpZXcueGFtbG9dA+oCDgIBAWcFZ6cBAwGLAWgFbw4DAYYBcAXuARACAUPvAQX9ARACAUH+AQWCAhUCAT+DAgWHAhoCATqIAgXnAgoCAQToAgXoAqgBAgECZ3JnpAEDAYwBbTdtZgMBiQFqOGpRAwGHAXEH7QESAgFE+wGYAfsBowICAUL+Ad4B/gHlAQIBQIUCgwGFAvsBAgE+hQKGAoUCjgICAT2DAlODAmgCATuIAlSIAmkCAQWKAgnWAhQCARPZAgnlAhQCAQfoAnPoAqUBAgEDdgvVARsCAVHdAQ/pARoCAUWSAgu/AhACASHAAgvVAhYCARTdAgvhAh8CARDiAgviAu4CAgEM4wIL4wK5AQIBCuQCC+QCjAECAQh2hQF2jwEDAYUBdnN2dgMBhAF5Ec0BHAIBVdIBEdIBfAIBUuEBEeUBJQIBTuYBEeYB9AICAUrnARHnAcEBAgFI6AER6AG7AQIBRpICGZICSgIBIpQCD7oCGgIBJL0CD70CdQIBI8cCDc4CFgIBHc8CDdMCIQIBGtQCDdQCnwECARXdApAB3QKfAQIBEeICQOICpwICAQ/iAtwC4gLrAgIBDeMCeeMCtgECAQvkAhzkAl8CAQl6E34hAwGBAX8TgwEoAgF8hAETtgEYAgFgtwETzAEYAgFW0gFi0gF5AgFT4QGWAeEBpQECAU/mAUbmAa0CAgFN5gHiAuYB8QICAUvnAX/nAb4BAgFJ6AEi6AGOAQIBR5kCEaACGgIBNqECEagCGgIBMqkCEbkCGQIBJcwCOMwC1wECASDJAjnJAksCAR7PApIBzwKoAQIBG9QCPdQCUQIBGNQChgHUApwBAgEWfKYBfKgCAwGDAXquAnrwAgMBggGBAZEBgQGOAgMBgAGBAZkCgQGgAgIBf39qf34CAX2EAWmEAX0CAWGGARegASICAWyjARe0ASICAWO3ASG3AXwCAVe5ARfAASACAVzDARfKASACAVieAjueAngCATmbAjybAlACATemAjumAjwCATWjAjyjAkMCATOqAhO4Ah4CASmpAkypAmwCASaHARmHAb8BAgF6iAEZjwEnAgF2kAEZlwEnAgFymAEZnwEiAgFtpAEZqwEiAgForAEZswEiAgFkvgFDvgFHAgFfuwFEuwFZAgFdyAFDyAFIAgFbxQFExQFZAgFZqwIVrwIlAgEvsAIVtwIeAgEqhwGHAYcBvAECAXuNAUyNAV0CAXeKAawBigG3AgIBeZUBTJUBXwIBc5IBrAGSAbgCAgF1nQFLnQFcAgFwmgFMmgFgAgFuqQFLqQFPAgFrpgFMpgFdAgFpsQFLsQFPAgFnrgFMrgFfAgFlrQKoAa0CnwICATGrAocCqwKNAgIBMLUCP7UCSAIBLbICQLICRwIBKw==</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d1NEOlxLdW11ZGhhIERlc2t0b3BcSkVQUCBNYXlcSkVQUCBQZXJmb3JtZXJcRnJhbWV3b3JrXFByb2Nlc3NcRG9jdW1lbnRfT3ZlcnZpZXcueGFtbHBdA+oCDgIBAWcFZ6cBAwGMAWgFbw4DAYcBcAXuARACAUPvAQX9ARACAUH+AQWCAhUCAT+DAgWHAhoCATqIAgXnAgoCAQToAgXoAqgBAgECZ3JnpAEDAY0BbTdtZgMBigFqOGpRAwGIAXEH7QESAgFE+wGYAfsBowICAUL+Ad4B/gHlAQIBQIUCgwGFAvsBAgE+hQKGAoUCjgICAT2DAlODAmgCATuIAlSIAmkCAQWKAgnWAhQCARPZAgnlAhQCAQfoAnPoAqUBAgEDdgvVARsCAVHdAQ/pARoCAUWSAgu/AhACASHAAgvVAhYCARTdAgvhAh8CARDiAgviAu4CAgEM4wIL4wK5AQIBCuQCC+QCjAECAQh2hQF2jwEDAYYBdnN2dgMBhQF5Ec0BHAIBVdIBEdIBfAIBUuEBEeUBJQIBTuYBEeYB9AICAUrnARHnAcEBAgFI6AER6AG7AQIBRpICGZICSgIBIpQCD7oCGgIBJL0CD70CdQIBI8cCDc4CFgIBHc8CDdMCIQIBGtQCDdQCnwECARXdApAB3QKfAQIBEeICQOICpwICAQ/iAtwC4gLrAgIBDeMCeeMCtgECAQvkAhzkAl8CAQl6E34hAwGBAX8TgwEoAgF8hAETtgEYAgFgtwETzAEYAgFW0gFi0gF5AgFT4QGWAeEBpQECAU/mAUbmAa0CAgFN5gHiAuYB8QICAUvnAX/nAb4BAgFJ6AEi6AGOAQIBR5kCEaACGgIBNqECEagCGgIBMqkCEbkCGQIBJcwCOMwC1wECASDJAjnJAksCAR7PApIBzwKoAQIBG9QCPdQCUQIBGNQChgHUApwBAgEWfKYBfIwCAwGEAXqgAXqmAQMBgwF6xQJ6hwMDAYIBgQGRAYEBjgIDAYABgQGZAoEBoAICAX9/an9+AgF9hAFphAF9AgFhhgEXoAEiAgFsowEXtAEiAgFjtwEhtwF8AgFXuQEXwAEgAgFcwwEXygEgAgFYngI7ngJ4AgE5mwI8mwJQAgE3pgI7pgI8AgE1owI8owJDAgEzqgITuAIeAgEpqQJMqQJsAgEmhwEZhwG/AQIBeogBGY8BJwIBdpABGZcBJwIBcpgBGZ8BIgIBbaQBGasBIgIBaKwBGbMBIgIBZL4BQ74BRwIBX7sBRLsBWQIBXcgBQ8gBSAIBW8UBRMUBWQIBWasCFa8CJQIBL7ACFbcCHgIBKocBhwGHAbwBAgF7jQFMjQFdAgF3igGsAYoBtwICAXmVAUyVAV8CAXOSAawBkgG4AgIBdZ0BS50BXAIBcJoBTJoBYAIBbqkBS6kBTwIBa6YBTKYBXQIBabEBS7EBTwIBZ64BTK4BXwIBZa0CqAGtAp8CAgExqwKHAqsCjQICATC1Aj+1AkgCAS2yAkCyAkcCASs=</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
@@ -436,13 +436,13 @@
       <sap2010:ViewStateData Id="Catch`1_1" sap:VirtualizedContainerService.HintSize="673,120">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
             <x:Boolean x:Key="IsPinned">False</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="TryCatch_1" sap:VirtualizedContainerService.HintSize="687,2056" />
-      <sap2010:ViewStateData Id="Sequence_34" sap:VirtualizedContainerService.HintSize="709,2180">
+      <sap2010:ViewStateData Id="TryCatch_1" sap:VirtualizedContainerService.HintSize="687,2254" />
+      <sap2010:ViewStateData Id="Sequence_34" sap:VirtualizedContainerService.HintSize="709,2378">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -542,7 +542,7 @@
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="LogMessage_13" sap:VirtualizedContainerService.HintSize="709,91" />
-      <sap2010:ViewStateData Id="Sequence_30" sap:VirtualizedContainerService.HintSize="731,3846">
+      <sap2010:ViewStateData Id="Sequence_30" sap:VirtualizedContainerService.HintSize="731,4044">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">False</x:Boolean>
@@ -551,7 +551,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Document_Overview_1" sap:VirtualizedContainerService.HintSize="771,3926">
+      <sap2010:ViewStateData Id="Document_Overview_1" sap:VirtualizedContainerService.HintSize="771,4124">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="ShouldCollapseAll">False</x:Boolean>
