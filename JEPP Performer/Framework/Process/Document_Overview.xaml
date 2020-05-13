@@ -2,6 +2,8 @@
  xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
  xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:p="http://schemas.microsoft.com/workflow/2012/07/xaml/activities"
+ xmlns:s="clr-namespace:System;assembly=mscorlib"
  xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
  xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
  xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
@@ -85,6 +87,7 @@
       <AssemblyReference>UiPath.Studio.Plugin.Workflow</AssemblyReference>
       <AssemblyReference>System.ValueTuple</AssemblyReference>
       <AssemblyReference>System.ComponentModel.Composition</AssemblyReference>
+      <AssemblyReference>System.Runtime.WindowsRuntime</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
   <Sequence sap2010:Annotation.AnnotationText="Document Overview Sequence in SAP where document number will be generated" DisplayName="Document Overview Sequence" sap2010:WorkflowViewState.IdRef="Sequence_30">
@@ -94,6 +97,8 @@
       <Variable x:TypeArguments="x:Boolean" Name="display_Document" />
       <Variable x:TypeArguments="x:Boolean" Name="document_Overview" />
       <Variable x:TypeArguments="ui:GenericValue" Name="document_Number" />
+      <Variable x:TypeArguments="ui:GenericValue" Name="company_Code_FB03" />
+      <Variable x:TypeArguments="ui:GenericValue" Name="fiscal_Year_FB03" />
     </Sequence.Variables>
     <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_8" Level="Info" Message="[&quot;Entered document overview workflow&quot;]" />
     <Assign DisplayName="Assign- FB03 Tcode" sap2010:WorkflowViewState.IdRef="Assign_14">
@@ -104,86 +109,153 @@
         <InArgument x:TypeArguments="ui:GenericValue">[in_Config("Document Overview Tcode").ToString]</InArgument>
       </Assign.Value>
     </Assign>
-    <ui:UiElementExists sap2010:Annotation.AnnotationText="Element exists to enter Transaction Code &quot;FB03&quot; " DisplayName="element exists to enter Transaction Code &quot;FB03&quot; " Exists="[overview_Page]" sap2010:WorkflowViewState.IdRef="UiElementExists_4">
-      <ui:UiElementExists.Target>
-        <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" InformativeScreenshot="9913039ab5489b182f4050320112e6b8" Selector="&lt;wnd app='saplogon.exe' cls='SAP_FRONTEND_SESSION' title='Batch Input: Session Overview' /&gt;&lt;sap id='tbar[0]/okcd' /&gt;" TimeoutMS="120000" WaitForReady="INTERACTIVE" />
-      </ui:UiElementExists.Target>
-    </ui:UiElementExists>
-    <If sap2010:Annotation.AnnotationText="Verify &quot;FB03&quot;" Condition="[overview_Page]" DisplayName="Verify &quot;FB03&quot;" sap2010:WorkflowViewState.IdRef="If_6">
-      <If.Then>
-        <ui:TypeInto DelayBefore="{x:Null}" DelayBetweenKeys="{x:Null}" DelayMS="{x:Null}" Activate="True" ClickBeforeTyping="False" DisplayName="Type into transaction code" EmptyField="False" sap2010:WorkflowViewState.IdRef="TypeInto_2" SendWindowMessages="False" SimulateType="False" Text="[&quot;/n&quot;+document_Overview_Tcode+ &quot;[k(enter)]&quot;]">
-          <ui:TypeInto.Target>
-            <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="9913039ab5489b182f4050320112e6b8" Selector="&lt;wnd app='saplogon.exe' cls='SAP_FRONTEND_SESSION' title='Batch Input: Session Overview' /&gt;&lt;sap id='tbar[0]/okcd' /&gt;" WaitForReady="INTERACTIVE" />
-          </ui:TypeInto.Target>
-        </ui:TypeInto>
-      </If.Then>
-      <If.Else>
-        <ui:Comment sap2010:WorkflowViewState.IdRef="Comment_1" Text="// Document overview not loaded" />
-      </If.Else>
-    </If>
-    <ui:UiElementExists DisplayName="Element exists : &quot;Display Document&quot;" Exists="[display_Document]" sap2010:WorkflowViewState.IdRef="UiElementExists_5">
-      <ui:UiElementExists.Target>
-        <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" InformativeScreenshot="448bfb6c87c3e6fefbb09c99f3d41450" Selector="&lt;wnd app='saplogon.exe' cls='SAP_FRONTEND_SESSION' title='Display Document: Initial Screen' /&gt;&lt;sap id='titl' /&gt;" TimeoutMS="12000" WaitForReady="INTERACTIVE" />
-      </ui:UiElementExists.Target>
-    </ui:UiElementExists>
-    <If sap2010:Annotation.AnnotationText="Verify &quot;Display Document&quot;" Condition="[display_Document]" DisplayName="Verify &quot;Display Document&quot;" sap2010:WorkflowViewState.IdRef="If_7">
-      <If.Then>
-        <Sequence DisplayName="Display document Sequence" sap2010:WorkflowViewState.IdRef="Sequence_20">
-          <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_9" Level="Info" Message="[&quot;Display document overview page loaded&quot;]" />
-          <ui:GetValue ContinueOnError="{x:Null}" DisplayName="Get Document Number" sap2010:WorkflowViewState.IdRef="GetValue_2">
-            <ui:GetValue.Target>
-              <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="571ea2c1703cdcf4aa845b820a010394" Selector="&lt;wnd app='saplogon.exe' cls='SAP_FRONTEND_SESSION' title='Display Document: Initial Screen' /&gt;&lt;sap id='usr/txtRF05L-BELNR' /&gt;" WaitForReady="INTERACTIVE" />
-            </ui:GetValue.Target>
-            <ui:GetValue.Value>
-              <OutArgument x:TypeArguments="ui:GenericValue">[document_Number]</OutArgument>
-            </ui:GetValue.Value>
-          </ui:GetValue>
-          <Assign DisplayName="Assign - Document number" sap2010:WorkflowViewState.IdRef="Assign_22">
-            <Assign.To>
-              <OutArgument x:TypeArguments="ui:GenericValue">[io_document_Number]</OutArgument>
-            </Assign.To>
-            <Assign.Value>
-              <InArgument x:TypeArguments="ui:GenericValue">[document_Number]</InArgument>
-            </Assign.Value>
-          </Assign>
-          <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click Document Number" sap2010:WorkflowViewState.IdRef="Click_2" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
-            <ui:Click.CursorPosition>
-              <ui:CursorPosition Position="Center">
-                <ui:CursorPosition.OffsetX>
-                  <InArgument x:TypeArguments="x:Int32" />
-                </ui:CursorPosition.OffsetX>
-                <ui:CursorPosition.OffsetY>
-                  <InArgument x:TypeArguments="x:Int32" />
-                </ui:CursorPosition.OffsetY>
-              </ui:CursorPosition>
-            </ui:Click.CursorPosition>
-            <ui:Click.Target>
-              <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="571ea2c1703cdcf4aa845b820a010394" Selector="&lt;wnd app='saplogon.exe' cls='SAP_FRONTEND_SESSION' title='Display Document: Initial Screen' /&gt;&lt;sap id='usr/txtRF05L-BELNR' /&gt;" WaitForReady="INTERACTIVE" />
-            </ui:Click.Target>
-          </ui:Click>
-          <ui:SendHotkey DelayBefore="{x:Null}" DelayBetweenKeys="{x:Null}" DelayMS="{x:Null}" Activate="True" ClickBeforeTyping="False" DisplayName="Enter" EmptyField="False" sap2010:WorkflowViewState.IdRef="SendHotkey_3" Key="enter" KeyModifiers="None" SendWindowMessages="False" SpecialKey="True">
-            <ui:SendHotkey.Target>
-              <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" Selector="{x:Null}" TimeoutMS="{x:Null}" WaitForReady="INTERACTIVE" />
-            </ui:SendHotkey.Target>
-          </ui:SendHotkey>
-        </Sequence>
-      </If.Then>
-      <If.Else>
-        <Sequence DisplayName="Exception Sequence" sap2010:WorkflowViewState.IdRef="Sequence_21">
-          <Sequence.Variables>
-            <Variable x:TypeArguments="ui:Image" Name="Error_Image" />
-          </Sequence.Variables>
-          <ui:TakeScreenshot WaitBefore="{x:Null}" DisplayName="Take Screenshot" sap2010:WorkflowViewState.IdRef="TakeScreenshot_5" Screenshot="[Error_Image]">
-            <ui:TakeScreenshot.Target>
-              <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" Selector="{x:Null}" TimeoutMS="{x:Null}" WaitForReady="INTERACTIVE" />
-            </ui:TakeScreenshot.Target>
-          </ui:TakeScreenshot>
-          <ui:SaveImage DisplayName="Save Screenshot" FileName="[in_Config(&quot;shared_Folder_Path_For_Attachments&quot;).ToString+in_Transaction_Queue_Item_Mails_Data.SpecificContent(&quot;mail_Folder_Count&quot;).ToString+&quot;\&quot;+in_Config(&quot;error_Screenshot_Name&quot;).ToString]" sap2010:WorkflowViewState.IdRef="SaveImage_6" Image="[Error_Image]" />
-          <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_10" Level="Info" Message="[&quot;Display document - initial screen is not loaded&quot;]" />
-          <Throw Exception="[new exception(&quot;FB03 not loaded&quot;)]" sap2010:WorkflowViewState.IdRef="Throw_3" />
-        </Sequence>
-      </If.Else>
-    </If>
+    <Sequence DisplayName="Sequence to check Document number, companycode and date is present" sap2010:WorkflowViewState.IdRef="Sequence_34">
+      <TryCatch DisplayName="Try Catch check Document number, companycode and date is present" sap2010:WorkflowViewState.IdRef="TryCatch_1">
+        <TryCatch.Variables>
+          <Variable x:TypeArguments="x:Boolean" Name="documentNumberExist" />
+        </TryCatch.Variables>
+        <TryCatch.Try>
+          <ui:RetryScope DisplayName="Retry Scope" sap2010:WorkflowViewState.IdRef="RetryScope_1" NumberOfRetries="3" RetryInterval="00:00:05">
+            <ui:RetryScope.ActivityBody>
+              <ActivityAction>
+                <Sequence DisplayName="Action" sap2010:WorkflowViewState.IdRef="Sequence_32">
+                  <ui:TypeInto DelayBefore="{x:Null}" DelayBetweenKeys="{x:Null}" DelayMS="{x:Null}" Activate="True" ClickBeforeTyping="False" DisplayName="Type into transaction code" EmptyField="False" sap2010:WorkflowViewState.IdRef="TypeInto_3" SendWindowMessages="False" SimulateType="False" Text="[&quot;/n&quot;+document_Overview_Tcode+ &quot;[k(enter)]&quot;]">
+                    <ui:TypeInto.Target>
+                      <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="9913039ab5489b182f4050320112e6b8" Selector="&lt;wnd app='saplogon.exe' cls='SAP_FRONTEND_SESSION' title='Batch Input: Session Overview' /&gt;&lt;sap id='tbar[0]/okcd' /&gt;" WaitForReady="INTERACTIVE" />
+                    </ui:TypeInto.Target>
+                  </ui:TypeInto>
+                  <ui:UiElementExists DisplayName="Element exists : &quot;Display Document&quot;" Exists="[display_Document]" sap2010:WorkflowViewState.IdRef="UiElementExists_7">
+                    <ui:UiElementExists.Target>
+                      <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" InformativeScreenshot="448bfb6c87c3e6fefbb09c99f3d41450" Selector="&lt;wnd app='saplogon.exe' cls='SAP_FRONTEND_SESSION' title='Display Document: Initial Screen' /&gt;&lt;sap id='titl' /&gt;" TimeoutMS="12000" WaitForReady="INTERACTIVE" />
+                    </ui:UiElementExists.Target>
+                  </ui:UiElementExists>
+                  <If sap2010:Annotation.AnnotationText="Verify &quot;Display Document&quot;" Condition="[display_Document]" DisplayName="Verify &quot;Display Document&quot;" sap2010:WorkflowViewState.IdRef="If_11">
+                    <If.Then>
+                      <Sequence DisplayName="Display document Sequence" sap2010:WorkflowViewState.IdRef="Sequence_31">
+                        <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_14" Level="Info" Message="[&quot;Display document overview page loaded&quot;]" />
+                        <ui:GetValue ContinueOnError="{x:Null}" DisplayName="Get Document Number" sap2010:WorkflowViewState.IdRef="GetValue_3">
+                          <ui:GetValue.Target>
+                            <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="571ea2c1703cdcf4aa845b820a010394" Selector="&lt;wnd app='saplogon.exe' cls='SAP_FRONTEND_SESSION' title='Display Document: Initial Screen' /&gt;&lt;sap id='usr/txtRF05L-BELNR' /&gt;" WaitForReady="INTERACTIVE" />
+                          </ui:GetValue.Target>
+                          <ui:GetValue.Value>
+                            <OutArgument x:TypeArguments="ui:GenericValue">[document_Number]</OutArgument>
+                          </ui:GetValue.Value>
+                        </ui:GetValue>
+                        <ui:GetValue ContinueOnError="{x:Null}" DisplayName="Get Company code" sap2010:WorkflowViewState.IdRef="GetValue_4">
+                          <ui:GetValue.Target>
+                            <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="571ea2c1703cdcf4aa845b820a010394" Selector="&lt;wnd app='saplogon.exe' cls='SAP_FRONTEND_SESSION' title='Display Document: Initial Screen' /&gt;&lt;sap id='usr/ctxtRF05L-BUKRS' /&gt;" WaitForReady="INTERACTIVE" />
+                          </ui:GetValue.Target>
+                          <ui:GetValue.Value>
+                            <OutArgument x:TypeArguments="ui:GenericValue">[company_Code_FB03]</OutArgument>
+                          </ui:GetValue.Value>
+                        </ui:GetValue>
+                        <Assign DisplayName="Assign - Document number" sap2010:WorkflowViewState.IdRef="Assign_23">
+                          <Assign.To>
+                            <OutArgument x:TypeArguments="ui:GenericValue">[io_document_Number]</OutArgument>
+                          </Assign.To>
+                          <Assign.Value>
+                            <InArgument x:TypeArguments="ui:GenericValue">[document_Number]</InArgument>
+                          </Assign.Value>
+                        </Assign>
+                      </Sequence>
+                    </If.Then>
+                    <If.Else>
+                      <Sequence sap2010:WorkflowViewState.IdRef="Sequence_35">
+                        <Assign sap2010:WorkflowViewState.IdRef="Assign_24">
+                          <Assign.To>
+                            <OutArgument x:TypeArguments="ui:GenericValue">[document_Number]</OutArgument>
+                          </Assign.To>
+                          <Assign.Value>
+                            <InArgument x:TypeArguments="ui:GenericValue">[""]</InArgument>
+                          </Assign.Value>
+                        </Assign>
+                        <Assign sap2010:WorkflowViewState.IdRef="Assign_27">
+                          <Assign.To>
+                            <OutArgument x:TypeArguments="ui:GenericValue">[company_Code_FB03]</OutArgument>
+                          </Assign.To>
+                          <Assign.Value>
+                            <InArgument x:TypeArguments="ui:GenericValue">[""]</InArgument>
+                          </Assign.Value>
+                        </Assign>
+                      </Sequence>
+                    </If.Else>
+                  </If>
+                  <If Condition="[document_Number.Trim&lt;&gt;&quot;&quot; and company_Code_FB03.Trim&lt;&gt;&quot;&quot;]" DisplayName="If document number is empty" sap2010:WorkflowViewState.IdRef="If_12">
+                    <If.Then>
+                      <Assign sap2010:WorkflowViewState.IdRef="Assign_25">
+                        <Assign.To>
+                          <OutArgument x:TypeArguments="x:Boolean">[documentNumberExist]</OutArgument>
+                        </Assign.To>
+                        <Assign.Value>
+                          <InArgument x:TypeArguments="x:Boolean">True</InArgument>
+                        </Assign.Value>
+                      </Assign>
+                    </If.Then>
+                    <If.Else>
+                      <Assign sap2010:WorkflowViewState.IdRef="Assign_26">
+                        <Assign.To>
+                          <OutArgument x:TypeArguments="x:Boolean">[documentNumberExist]</OutArgument>
+                        </Assign.To>
+                        <Assign.Value>
+                          <InArgument x:TypeArguments="x:Boolean">False</InArgument>
+                        </Assign.Value>
+                      </Assign>
+                    </If.Else>
+                  </If>
+                </Sequence>
+              </ActivityAction>
+            </ui:RetryScope.ActivityBody>
+            <ui:RetryScope.Condition>
+              <ActivityFunc x:TypeArguments="x:Boolean">
+                <p:IsTrue DisplayName="Is true" sap2010:WorkflowViewState.IdRef="IsTrue_1" Input="[documentNumberExist]" />
+              </ActivityFunc>
+            </ui:RetryScope.Condition>
+          </ui:RetryScope>
+        </TryCatch.Try>
+        <TryCatch.Catches>
+          <Catch x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="Catch`1_1">
+            <ActivityAction x:TypeArguments="s:Exception">
+              <ActivityAction.Argument>
+                <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+              </ActivityAction.Argument>
+              <Sequence DisplayName="Exception Sequence" sap2010:WorkflowViewState.IdRef="Sequence_33">
+                <Sequence.Variables>
+                  <Variable x:TypeArguments="ui:Image" Name="Error_Image" />
+                </Sequence.Variables>
+                <ui:TakeScreenshot WaitBefore="{x:Null}" DisplayName="Take Screenshot" sap2010:WorkflowViewState.IdRef="TakeScreenshot_7" Screenshot="[Error_Image]">
+                  <ui:TakeScreenshot.Target>
+                    <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" Selector="{x:Null}" TimeoutMS="{x:Null}" WaitForReady="INTERACTIVE" />
+                  </ui:TakeScreenshot.Target>
+                </ui:TakeScreenshot>
+                <ui:SaveImage DisplayName="Save Screenshot" FileName="[in_Config(&quot;shared_Folder_Path_For_Attachments&quot;).ToString+in_Transaction_Queue_Item_Mails_Data.SpecificContent(&quot;mail_Folder_Count&quot;).ToString+&quot;\&quot;+in_Config(&quot;error_Screenshot_Name&quot;).ToString]" sap2010:WorkflowViewState.IdRef="SaveImage_8" Image="[Error_Image]" />
+                <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_15" Level="Info" Message="[&quot;Display document - initial screen is not loaded&quot;]" />
+                <Throw Exception="[new exception(&quot;FB03 not loaded or Document Number/Company Code field in FB03 screen is empty&quot;)]" sap2010:WorkflowViewState.IdRef="Throw_4" />
+              </Sequence>
+            </ActivityAction>
+          </Catch>
+        </TryCatch.Catches>
+      </TryCatch>
+    </Sequence>
+    <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click Document Number" sap2010:WorkflowViewState.IdRef="Click_3" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
+      <ui:Click.CursorPosition>
+        <ui:CursorPosition Position="Center">
+          <ui:CursorPosition.OffsetX>
+            <InArgument x:TypeArguments="x:Int32" />
+          </ui:CursorPosition.OffsetX>
+          <ui:CursorPosition.OffsetY>
+            <InArgument x:TypeArguments="x:Int32" />
+          </ui:CursorPosition.OffsetY>
+        </ui:CursorPosition>
+      </ui:Click.CursorPosition>
+      <ui:Click.Target>
+        <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="571ea2c1703cdcf4aa845b820a010394" Selector="&lt;wnd app='saplogon.exe' cls='SAP_FRONTEND_SESSION' title='Display Document: Initial Screen' /&gt;&lt;sap id='usr/txtRF05L-BELNR' /&gt;" WaitForReady="INTERACTIVE" />
+      </ui:Click.Target>
+    </ui:Click>
+    <ui:SendHotkey DelayBefore="{x:Null}" DelayBetweenKeys="{x:Null}" DelayMS="{x:Null}" Activate="True" ClickBeforeTyping="False" DisplayName="Enter" EmptyField="False" sap2010:WorkflowViewState.IdRef="SendHotkey_5" Key="enter" KeyModifiers="None" SendWindowMessages="False" SpecialKey="True">
+      <ui:SendHotkey.Target>
+        <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" Selector="{x:Null}" TimeoutMS="{x:Null}" WaitForReady="INTERACTIVE" />
+      </ui:SendHotkey.Target>
+    </ui:SendHotkey>
     <ui:UiElementExists DisplayName="Element Exists for document overview" Exists="[document_Overview]" sap2010:WorkflowViewState.IdRef="UiElementExists_6">
       <ui:UiElementExists.Target>
         <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" InformativeScreenshot="4e98f18ee34ea43e1e7e6db9e2251a82" Selector="&lt;wnd app='saplogon.exe' cls='SAP_FRONTEND_SESSION' title='Document Overview - Display' /&gt;&lt;sap id='titl' /&gt;" TimeoutMS="120000" WaitForReady="INTERACTIVE" />
@@ -270,17 +342,51 @@
         </Sequence>
       </If.Then>
       <If.Else>
-        <ui:Comment sap2010:WorkflowViewState.IdRef="Comment_3" Text="// Document overview Final screen loaded" />
+        <Sequence DisplayName="Exception Sequence" sap2010:WorkflowViewState.IdRef="Sequence_36">
+          <Sequence.Variables>
+            <Variable x:TypeArguments="ui:Image" Name="Error_Image" />
+          </Sequence.Variables>
+          <ui:TakeScreenshot WaitBefore="{x:Null}" DisplayName="Take Screenshot" sap2010:WorkflowViewState.IdRef="TakeScreenshot_8" Screenshot="[Error_Image]">
+            <ui:TakeScreenshot.Target>
+              <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" Selector="{x:Null}" TimeoutMS="{x:Null}" WaitForReady="INTERACTIVE" />
+            </ui:TakeScreenshot.Target>
+          </ui:TakeScreenshot>
+          <ui:SaveImage DisplayName="Save Screenshot" FileName="[in_Config(&quot;shared_Folder_Path_For_Attachments&quot;).ToString+in_Transaction_Queue_Item_Mails_Data.SpecificContent(&quot;mail_Folder_Count&quot;).ToString+&quot;\&quot;+in_Config(&quot;error_Screenshot_Name&quot;).ToString]" sap2010:WorkflowViewState.IdRef="SaveImage_9" Image="[Error_Image]" />
+          <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_16" Level="Info" Message="[&quot;Display document - Final screen is not loaded&quot;]" />
+          <Throw Exception="[new exception(&quot;FB03 Final Success Screen not loaded&quot;)]" sap2010:WorkflowViewState.IdRef="Throw_5" />
+        </Sequence>
       </If.Else>
     </If>
     <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_13" Level="Info" Message="[&quot;Exiting document overview workflow&quot;]" />
-    <sads:DebugSymbol.Symbol>d9MBQzpcVXNlcnNcU1ZDLTA5OTA1NTlcTXVzaWNcSkVQUCBNdWx0aWJvdChEaXNwYWNoZXIsIFBlcmZvcm1lciBhbmQgQXVkaXQgTG9nIHNoYXJlcG9pbnQpX25ldyBjclxKRVBQIE11bHRpYm90KERpc3BhY2hlciwgUGVyZm9ybWVyIGFuZCBBdWRpdCBMb2cgc2hhcmVwb2ludClcSkVQUCBQZXJmb3JtZXJcRnJhbWV3b3JrXFByb2Nlc3NcRG9jdW1lbnRfT3ZlcnZpZXcueGFtbFNaA5YCDgIBAWIFYqcBAgFpYwVqDgIBZGsFbxoCAV9wBXsKAgFYfAWAARoCAVOBAQW6AQoCATS7AQW/ARoCAS/AAQWTAgoCAQSUAgWUAqgBAgECYnJipAECAWpoN2hmAgFnZThlUQIBZW2DAW2FAgIBY22QAm2YAgIBYmvIAWvZAQIBYHBPcGACAVlyCXYXAgFceQl5agIBW36DAX6AAgIBV36LAn6SAgIBVnxcfHACAVSBAVuBAW8CATWDAQmpARQCAUOsAQm4ARQCATe9AYMBvQH7AQIBM70BhgK9AY4CAgEyuwFTuwFoAgEwwAFUwAFpAgEFwgEJjgIUAgEIkQIJkQJzAgEHlAJzlAKlAQIBA3ScAXSeAgIBXnKkAnLmAgIBXYQBC4QBsAECAVGFAQuMARkCAU2NAQuUARQCAUiVAQujARYCAUakAQuoARsCAUSwAQu0AR8CAUC1AQu1Ae4CAgE8tgELtgG7AQIBOrcBC7cBdwIBOMoBC/cBEAIBFvgBC40CFgIBCYQBeIQBrQECAVKKAT6KAU8CAU6HAZ4BhwGpAgIBUJIBPZIBTgIBS48BPo8BUgIBSaEBngGhAakCAgFHpAHkAaQB6wECAUWwAZABsAGfAQIBQbUBQLUBpwICAT+1AdwCtQHrAgIBPbYBebYBuAECATu3ARy3AUoCATnKARnKAUoCARfMAQ/yARoCARn1AQ/1AXUCARj/AQ2GAhYCARKHAg2LAiECAQ+MAg2MAp8BAgEK0QER2AEaAgEr2QER4AEaAgEn4QER8QEZAgEahAI4hALXAQIBFYECOYECSwIBE4cCkgGHAqgBAgEQjAI9jAJRAgENjAKGAYwCnAECAQvWATvWAXgCAS7TATzTAVACASzeATveATwCASrbATzbAUMCASjiARPwAR4CAR7hAUzhAWwCARvjARXnASUCASToARXvAR4CAR/lAagB5QGfAgIBJuMBhwLjAY0CAgEl7QE/7QFIAgEi6gFA6gFHAgEg</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d1NEOlxLdW11ZGhhIERlc2t0b3BcSkVQUCBNYXlcSkVQUCBQZXJmb3JtZXJcRnJhbWV3b3JrXFByb2Nlc3NcRG9jdW1lbnRfT3ZlcnZpZXcueGFtbG9dA+oCDgIBAWcFZ6cBAwGLAWgFbw4DAYYBcAXuARACAUPvAQX9ARACAUH+AQWCAhUCAT+DAgWHAhoCATqIAgXnAgoCAQToAgXoAqgBAgECZ3JnpAEDAYwBbTdtZgMBiQFqOGpRAwGHAXEH7QESAgFE+wGYAfsBowICAUL+Ad4B/gHlAQIBQIUCgwGFAvsBAgE+hQKGAoUCjgICAT2DAlODAmgCATuIAlSIAmkCAQWKAgnWAhQCARPZAgnlAhQCAQfoAnPoAqUBAgEDdgvVARsCAVHdAQ/pARoCAUWSAgu/AhACASHAAgvVAhYCARTdAgvhAh8CARDiAgviAu4CAgEM4wIL4wK5AQIBCuQCC+QCjAECAQh2hQF2jwEDAYUBdnN2dgMBhAF5Ec0BHAIBVdIBEdIBfAIBUuEBEeUBJQIBTuYBEeYB9AICAUrnARHnAcEBAgFI6AER6AG7AQIBRpICGZICSgIBIpQCD7oCGgIBJL0CD70CdQIBI8cCDc4CFgIBHc8CDdMCIQIBGtQCDdQCnwECARXdApAB3QKfAQIBEeICQOICpwICAQ/iAtwC4gLrAgIBDeMCeeMCtgECAQvkAhzkAl8CAQl6E34hAwGBAX8TgwEoAgF8hAETtgEYAgFgtwETzAEYAgFW0gFi0gF5AgFT4QGWAeEBpQECAU/mAUbmAa0CAgFN5gHiAuYB8QICAUvnAX/nAb4BAgFJ6AEi6AGOAQIBR5kCEaACGgIBNqECEagCGgIBMqkCEbkCGQIBJcwCOMwC1wECASDJAjnJAksCAR7PApIBzwKoAQIBG9QCPdQCUQIBGNQChgHUApwBAgEWfKYBfKgCAwGDAXquAnrwAgMBggGBAZEBgQGOAgMBgAGBAZkCgQGgAgIBf39qf34CAX2EAWmEAX0CAWGGARegASICAWyjARe0ASICAWO3ASG3AXwCAVe5ARfAASACAVzDARfKASACAVieAjueAngCATmbAjybAlACATemAjumAjwCATWjAjyjAkMCATOqAhO4Ah4CASmpAkypAmwCASaHARmHAb8BAgF6iAEZjwEnAgF2kAEZlwEnAgFymAEZnwEiAgFtpAEZqwEiAgForAEZswEiAgFkvgFDvgFHAgFfuwFEuwFZAgFdyAFDyAFIAgFbxQFExQFZAgFZqwIVrwIlAgEvsAIVtwIeAgEqhwGHAYcBvAECAXuNAUyNAV0CAXeKAawBigG3AgIBeZUBTJUBXwIBc5IBrAGSAbgCAgF1nQFLnQFcAgFwmgFMmgFgAgFuqQFLqQFPAgFrpgFMpgFdAgFpsQFLsQFPAgFnrgFMrgFfAgFlrQKoAa0CnwICATGrAocCqwKNAgIBMLUCP7UCSAIBLbICQLICRwIBKw==</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
-      <sap2010:ViewStateData Id="LogMessage_8" sap:VirtualizedContainerService.HintSize="1186,91" />
-      <sap2010:ViewStateData Id="Assign_14" sap:VirtualizedContainerService.HintSize="1186,60" />
-      <sap2010:ViewStateData Id="UiElementExists_4" sap:VirtualizedContainerService.HintSize="1186,106">
+      <sap2010:ViewStateData Id="LogMessage_8" sap:VirtualizedContainerService.HintSize="709,91" />
+      <sap2010:ViewStateData Id="Assign_14" sap:VirtualizedContainerService.HintSize="709,60" />
+      <sap2010:ViewStateData Id="TypeInto_3" sap:VirtualizedContainerService.HintSize="625,134" />
+      <sap2010:ViewStateData Id="UiElementExists_7" sap:VirtualizedContainerService.HintSize="625,106" />
+      <sap2010:ViewStateData Id="LogMessage_14" sap:VirtualizedContainerService.HintSize="314,91" />
+      <sap2010:ViewStateData Id="GetValue_3" sap:VirtualizedContainerService.HintSize="314,106" />
+      <sap2010:ViewStateData Id="GetValue_4" sap:VirtualizedContainerService.HintSize="314,106" />
+      <sap2010:ViewStateData Id="Assign_23" sap:VirtualizedContainerService.HintSize="314,60" />
+      <sap2010:ViewStateData Id="Sequence_31" sap:VirtualizedContainerService.HintSize="336,607">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_24" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_27" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Sequence_35" sap:VirtualizedContainerService.HintSize="264,284">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_11" sap:VirtualizedContainerService.HintSize="625,754">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -289,33 +395,18 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="TypeInto_2" sap:VirtualizedContainerService.HintSize="314,134" />
-      <sap2010:ViewStateData Id="Comment_1" sap:VirtualizedContainerService.HintSize="314,55" />
-      <sap2010:ViewStateData Id="If_6" sap:VirtualizedContainerService.HintSize="1186,282">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-            <x:Boolean x:Key="IsPinned">False</x:Boolean>
-            <x:Boolean x:Key="IsAnnotationDocked">False</x:Boolean>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="UiElementExists_5" sap:VirtualizedContainerService.HintSize="1186,106" />
-      <sap2010:ViewStateData Id="LogMessage_9" sap:VirtualizedContainerService.HintSize="314,91" />
-      <sap2010:ViewStateData Id="GetValue_2" sap:VirtualizedContainerService.HintSize="314,106" />
-      <sap2010:ViewStateData Id="Assign_22" sap:VirtualizedContainerService.HintSize="314,60" />
-      <sap2010:ViewStateData Id="Click_2" sap:VirtualizedContainerService.HintSize="314,106" />
-      <sap2010:ViewStateData Id="SendHotkey_3" sap:VirtualizedContainerService.HintSize="314,116" />
-      <sap2010:ViewStateData Id="Sequence_20" sap:VirtualizedContainerService.HintSize="336,763">
+      <sap2010:ViewStateData Id="Assign_25" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_26" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="If_12" sap:VirtualizedContainerService.HintSize="625,207" />
+      <sap2010:ViewStateData Id="Sequence_32" sap:VirtualizedContainerService.HintSize="647,1445">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="TakeScreenshot_5" sap:VirtualizedContainerService.HintSize="314,68" />
-      <sap2010:ViewStateData Id="SaveImage_6" sap:VirtualizedContainerService.HintSize="314,92" />
-      <sap2010:ViewStateData Id="LogMessage_10" sap:VirtualizedContainerService.HintSize="314,91">
+      <sap2010:ViewStateData Id="IsTrue_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="RetryScope_1" sap:VirtualizedContainerService.HintSize="669,1626">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -323,8 +414,9 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Throw_3" sap:VirtualizedContainerService.HintSize="314,22" />
-      <sap2010:ViewStateData Id="Sequence_21" sap:VirtualizedContainerService.HintSize="336,517">
+      <sap2010:ViewStateData Id="TakeScreenshot_7" sap:VirtualizedContainerService.HintSize="314,68" />
+      <sap2010:ViewStateData Id="SaveImage_8" sap:VirtualizedContainerService.HintSize="314,92" />
+      <sap2010:ViewStateData Id="LogMessage_15" sap:VirtualizedContainerService.HintSize="314,91">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -332,16 +424,34 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="If_7" sap:VirtualizedContainerService.HintSize="1186,911">
+      <sap2010:ViewStateData Id="Throw_4" sap:VirtualizedContainerService.HintSize="314,22" />
+      <sap2010:ViewStateData Id="Sequence_33" sap:VirtualizedContainerService.HintSize="200,51">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Catch`1_1" sap:VirtualizedContainerService.HintSize="673,120">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
             <x:Boolean x:Key="IsPinned">False</x:Boolean>
-            <x:Boolean x:Key="IsAnnotationDocked">False</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="UiElementExists_6" sap:VirtualizedContainerService.HintSize="1186,106">
+      <sap2010:ViewStateData Id="TryCatch_1" sap:VirtualizedContainerService.HintSize="687,2056" />
+      <sap2010:ViewStateData Id="Sequence_34" sap:VirtualizedContainerService.HintSize="709,2180">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Click_3" sap:VirtualizedContainerService.HintSize="709,106" />
+      <sap2010:ViewStateData Id="SendHotkey_5" sap:VirtualizedContainerService.HintSize="709,116" />
+      <sap2010:ViewStateData Id="UiElementExists_6" sap:VirtualizedContainerService.HintSize="709,106">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -395,15 +505,34 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_29" sap:VirtualizedContainerService.HintSize="847,1596">
+      <sap2010:ViewStateData Id="Sequence_29" sap:VirtualizedContainerService.HintSize="200,51">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Comment_3" sap:VirtualizedContainerService.HintSize="314,55" />
-      <sap2010:ViewStateData Id="If_10" sap:VirtualizedContainerService.HintSize="1186,1744">
+      <sap2010:ViewStateData Id="TakeScreenshot_8" sap:VirtualizedContainerService.HintSize="314,68" />
+      <sap2010:ViewStateData Id="SaveImage_9" sap:VirtualizedContainerService.HintSize="314,92" />
+      <sap2010:ViewStateData Id="LogMessage_16" sap:VirtualizedContainerService.HintSize="314,91">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Throw_5" sap:VirtualizedContainerService.HintSize="314,22" />
+      <sap2010:ViewStateData Id="Sequence_36" sap:VirtualizedContainerService.HintSize="336,517">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_10" sap:VirtualizedContainerService.HintSize="709,665">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -412,8 +541,8 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="LogMessage_13" sap:VirtualizedContainerService.HintSize="1186,91" />
-      <sap2010:ViewStateData Id="Sequence_30" sap:VirtualizedContainerService.HintSize="1208,3968">
+      <sap2010:ViewStateData Id="LogMessage_13" sap:VirtualizedContainerService.HintSize="709,91" />
+      <sap2010:ViewStateData Id="Sequence_30" sap:VirtualizedContainerService.HintSize="731,3846">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">False</x:Boolean>
@@ -422,7 +551,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Document_Overview_1" sap:VirtualizedContainerService.HintSize="1248,4048">
+      <sap2010:ViewStateData Id="Document_Overview_1" sap:VirtualizedContainerService.HintSize="771,3926">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="ShouldCollapseAll">False</x:Boolean>
