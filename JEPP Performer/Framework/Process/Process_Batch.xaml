@@ -232,7 +232,7 @@
       <If Condition="[enter_GL_Account]" DisplayName="Verify GL_Account" sap2010:WorkflowViewState.IdRef="If_8">
         <If.Then>
           <Sequence sap2010:WorkflowViewState.IdRef="Sequence_13">
-            <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click on continue" sap2010:WorkflowViewState.IdRef="Click_16" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="True">
+            <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" ContinueOnError="True" DisplayName="Click on continue" sap2010:WorkflowViewState.IdRef="Click_16" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="True">
               <ui:Click.CursorPosition>
                 <ui:CursorPosition Position="Center">
                   <ui:CursorPosition.OffsetX>
@@ -247,7 +247,7 @@
                 <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="de9d8dadb0b54eecf3002c7cd2f7110e" Selector="&lt;wnd app='saplogon.exe' cls='#32770' title='Enter G/L account manually: Add G/L account item' /&gt;&lt;wnd ctrlid='1' /&gt;" WaitForReady="INTERACTIVE" />
               </ui:Click.Target>
             </ui:Click>
-            <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click on continue" sap2010:WorkflowViewState.IdRef="Click_17" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="True">
+            <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" ContinueOnError="True" DisplayName="Click on continue" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="True">
               <ui:Click.CursorPosition>
                 <ui:CursorPosition Position="Center">
                   <ui:CursorPosition.OffsetX>
@@ -259,7 +259,23 @@
                 </ui:CursorPosition>
               </ui:Click.CursorPosition>
               <ui:Click.Target>
-                <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="e9154b2429dd0b9d5bed8e0ee10570cb" Selector="&lt;wnd app='saplogon.exe' cls='#32770' title='Enter G/L account manually: Add G/L account item' /&gt;&lt;wnd ctrlid='1' /&gt;" WaitForReady="INTERACTIVE" />
+                <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" InformativeScreenshot="de9d8dadb0b54eecf3002c7cd2f7110e" Selector="&lt;wnd app='saplogon.exe' cls='#32770' title='Enter G/L account manually: Add G/L account item' /&gt;&lt;wnd ctrlid='1' /&gt;" TimeoutMS="15000" WaitForReady="INTERACTIVE" />
+              </ui:Click.Target>
+              <sap2010:WorkflowViewState.IdRef>Click_28</sap2010:WorkflowViewState.IdRef>
+            </ui:Click>
+            <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" ContinueOnError="True" DisplayName="Click on continue" sap2010:WorkflowViewState.IdRef="Click_17" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="True">
+              <ui:Click.CursorPosition>
+                <ui:CursorPosition Position="Center">
+                  <ui:CursorPosition.OffsetX>
+                    <InArgument x:TypeArguments="x:Int32" />
+                  </ui:CursorPosition.OffsetX>
+                  <ui:CursorPosition.OffsetY>
+                    <InArgument x:TypeArguments="x:Int32" />
+                  </ui:CursorPosition.OffsetY>
+                </ui:CursorPosition>
+              </ui:Click.CursorPosition>
+              <ui:Click.Target>
+                <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" InformativeScreenshot="e9154b2429dd0b9d5bed8e0ee10570cb" Selector="&lt;wnd app='saplogon.exe' cls='#32770' title='Enter G/L account manually: Add G/L account item' /&gt;&lt;wnd ctrlid='1' /&gt;" TimeoutMS="15000" WaitForReady="INTERACTIVE" />
               </ui:Click.Target>
             </ui:Click>
           </Sequence>
@@ -497,7 +513,7 @@
     </If>
     <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_16" Level="Info" Message="[&quot;Session ran successfully&quot;]" />
     <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_17" Level="Info" Message="[&quot;Exiting SAP-batch processing workflow&quot;]" />
-    <sads:DebugSymbol.Symbol>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AqYB/AK2AQMB9QH8As4B/ALjAQMB8wH9AiT9AkMDAfEB/QK9Af0C0QEDAe8B/QKnAf0CtwEDAe4B/QLfAf0C9AEDAewB/gIk/gJDAwHqAf4CvQH+AtEBAwHoAf4CpwH+ArcBAwHnAf4C3wH+AvQBAwHlAf8CJP8CQwMB4wH/Ar0B/wLQAQMB4QH/AqcB/wK3AQMB4AH/At4B/wLzAQMB3gGAAySAA0MDAdwBgAO9AYAD0QEDAdoBgAOnAYADtwEDAdkBgAPfAYAD9AEDAdcBgQMkgQNDAwHVAYEDvQGBA9ABAwHTAYEDpwGBA7cBAwHSAYED3gGBA/MBAwHQAYIDJIIDQwMBzgGCA78BggPOAQMBzAGCA6kBggO5AQMBywGCA9wBggPxAQMByQGDAySDA0MDAccBgwO8AYMDxAEDAcYBgwOmAYMDtgEDAcUBgwPSAYMD5wEDAcMBhAMkhANDAwHBAYQDvAGEA88BAwG/AYQDpgGEA7YBAwG+AYQD3QGEA/IBAwG8AYUDJIUDQwMBugGFA7wBhQPNAQMBuAGFA6YBhQO2AQMBtwGFA9sBhQPwAQMBtQGGAySGA0MDAbMBhgO/AYYD4wEDAbIBhgOpAYYDuQEDAbEBhgPxAYYDhgIDAa8BhwMkhwNDAwGtAYcDvwGHA9IBAwGrAYcDqQGHA7kBAwGqAYcD4AGHA/UBAwGoAYgDcIgDxQEDAaUBiAMqiANJAwGjAY4DQ44DjgEDAaEBiwNEiwNbAwGfAZEDf5EDsQEDAZ0BlgM+lgNQAwGaAZID2QOSA+gDAwGYAZUDPpUD+wEDAZcBkgOGAZID1gEDAZYBkgPrApID1QMDAZMBmgN/mgOvAQMBkQGbAyKbA1ADAY8BpAOXAaQDqwEDAYsBqQNGqQOtAgMBiQGpA+MCqQP3AgMBhwGsA6QBrAO0AgMBhQGqA6ECqgOvAgMBhAG7A6QBuwOJAgMBggG+Azu+A1QCAX/BAxfBA0YCAX6+A7YBvgPGAQIBfb4D1AG+A+kBAgF7ygNDygNoAgF5xwNExwNTAgF3zQMkzQNDAgF1zQO8Ac0DwAECAXTNA6YBzQO2AQIBc80DzgHNA+MBAgFxzgMkzgNDAgFvzgO9Ac4D0QECAW3OA6cBzgO3AQIBbM4D3wHOA/QBAgFqzwMkzwNDAgFozwO9Ac8D0QECAWbPA6cBzwO3AQIBZc8D3wHPA/QBAgFj0AMk0ANDAgFh0AO9AdAD0AECAV/QA6cB0AO3AQIBXtAD3gHQA/MBAgFc0QMk0QNDAgFa0QO9AdED0QECAVjRA6cB0QO3AQIBV9ED3wHRA/QBAgFV0gMk0gNDAgFT0gO9AdID0AECAVHSA6cB0gO3AQIBUNID3gHSA/MBAgFO0wMk0wNDAgFM0wO/AdMDzgECAUrTA6kB0wO5AQIBSdMD3AHTA/EBAgFH1AMk1ANDAgFF1AO8AdQDzwECAUPUA6YB1AO2AQIBQtQD3QHUA/IBAgFA1QMk1QNDAgE+1QO8AdUDzQECATzVA6YB1QO2AQIBO9UD2wHVA/ABAgE51gMk1gNDAgE31gO8AdYDxAECATbWA6YB1gO2AQIBNdYD0gHWA+cBAgEz1wMk1wNDAgEx1wO/AdcD4wECATDXA6kB1wO5AQIBL9cD8QHXA4YCAgEt2AMk2ANDAgEr2AO/AdgD0gECASnYA6kB2AO5AQIBKNgD4AHYA/UBAgEm2QNw2QPFAQIBI9kDKtkDSQIBId8DQ98DjgECAR/cA0TcA1sCAR3iA3/iA7EBAgEb5wM+5wNQAgEY4wPLA+MD2gMCARbmAz7mA/sBAgEV4wOGAeMD1gECARTjA90C4wPHAwIBEesDIusDUAIBDw==</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>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AY0D3wGNA/QBAwHsAY4DJI4DQwMB6gGOA70BjgPRAQMB6AGOA6cBjgO3AQMB5wGOA98BjgP0AQMB5QGPAySPA0MDAeMBjwO9AY8D0AEDAeEBjwOnAY8DtwEDAeABjwPeAY8D8wEDAd4BkAMkkANDAwHcAZADvQGQA9EBAwHaAZADpwGQA7cBAwHZAZAD3wGQA/QBAwHXAZEDJJEDQwMB1QGRA70BkQPQAQMB0wGRA6cBkQO3AQMB0gGRA94BkQPzAQMB0AGSAySSA0MDAc4BkgO/AZIDzgEDAcwBkgOpAZIDuQEDAcsBkgPcAZID8QEDAckBkwMkkwNDAwHHAZMDvAGTA8QBAwHGAZMDpgGTA7YBAwHFAZMD0gGTA+cBAwHDAZQDJJQDQwMBwQGUA7wBlAPPAQMBvwGUA6YBlAO2AQMBvgGUA90BlAPyAQMBvAGVAySVA0MDAboBlQO8AZUDzQEDAbgBlQOmAZUDtgEDAbcBlQPbAZUD8AEDAbUBlgMklgNDAwGzAZYDvwGWA+MBAwGyAZYDqQGWA7kBAwGxAZYD8QGWA4YCAwGvAZcDJJcDQwMBrQGXA78BlwPSAQMBqwGXA6kBlwO5AQMBqgGXA+ABlwP1AQMBqAGYA3CYA8UBAwGlAZgDKpgDSQMBowGeA0OeA44BAwGhAZsDRJsDWwMBnwGhA3+hA7EBAwGdAaYDPqYDUAMBmgGiA9kDogPoAwMBmAGlAz6lA/sBAwGXAaIDhgGiA9YBAwGWAaID6wKiA9UDAwGTAaoDf6oDrwEDAZEBqwMiqwNQAwGPAbQDlwG0A6sBAwGLAbkDRrkDrQIDAYkBuQPjArkD9wIDAYcBvAOkAbwDtAIDAYUBugOhAroDrwIDAYQBywOkAcsDiQIDAYIBzgM7zgNUAgF/0QMX0QNGAgF+zgO2Ac4DxgECAX3OA9QBzgPpAQIBe9oDQ9oDaAIBedcDRNcDUwIBd90DJN0DQwIBdd0DvAHdA8ABAgF03QOmAd0DtgECAXPdA84B3QPjAQIBcd4DJN4DQwIBb94DvQHeA9EBAgFt3gOnAd4DtwECAWzeA98B3gP0AQIBat8DJN8DQwIBaN8DvQHfA9EBAgFm3wOnAd8DtwECAWXfA98B3wP0AQIBY+ADJOADQwIBYeADvQHgA9ABAgFf4AOnAeADtwECAV7gA94B4APzAQIBXOEDJOEDQwIBWuEDvQHhA9EBAgFY4QOnAeEDtwECAVfhA98B4QP0AQIBVeIDJOIDQwIBU+IDvQHiA9ABAgFR4gOnAeIDtwECAVDiA94B4gPzAQIBTuMDJOMDQwIBTOMDvwHjA84BAgFK4wOpAeMDuQECAUnjA9wB4wPxAQIBR+QDJOQDQwIBReQDvAHkA88BAgFD5AOmAeQDtgECAULkA90B5APyAQIBQOUDJOUDQwIBPuUDvAHlA80BAgE85QOmAeUDtgECATvlA9sB5QPwAQIBOeYDJOYDQwIBN+YDvAHmA8QBAgE25gOmAeYDtgECATXmA9IB5gPnAQIBM+cDJOcDQwIBMecDvwHnA+MBAgEw5wOpAecDuQECAS/nA/EB5wOGAgIBLegDJOgDQwIBK+gDvwHoA9IBAgEp6AOpAegDuQECASjoA+AB6AP1AQIBJukDcOkDxQECASPpAyrpA0kCASHvA0PvA44BAgEf7ANE7ANbAgEd8gN/8gOxAQIBG/cDPvcDUAIBGPMDywPzA9oDAgEW9gM+9gP7AQIBFfMDhgHzA9YBAgEU8wPdAvMDxwMCARH7AyL7A1ACAQ8=</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
@@ -605,6 +621,14 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Click_28" sap:VirtualizedContainerService.HintSize="314,106">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="Click_17" sap:VirtualizedContainerService.HintSize="314,106">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
@@ -613,7 +637,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_13" sap:VirtualizedContainerService.HintSize="336,376">
+      <sap2010:ViewStateData Id="Sequence_13" sap:VirtualizedContainerService.HintSize="336,522">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -621,8 +645,8 @@
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="Comment_4" sap:VirtualizedContainerService.HintSize="314,55" />
-      <sap2010:ViewStateData Id="If_8" sap:VirtualizedContainerService.HintSize="675,524" />
-      <sap2010:ViewStateData Id="Sequence_14" sap:VirtualizedContainerService.HintSize="1192,794">
+      <sap2010:ViewStateData Id="If_8" sap:VirtualizedContainerService.HintSize="675,670" />
+      <sap2010:ViewStateData Id="Sequence_14" sap:VirtualizedContainerService.HintSize="1192,940">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -761,7 +785,7 @@
       </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="LogMessage_16" sap:VirtualizedContainerService.HintSize="1192,91" />
       <sap2010:ViewStateData Id="LogMessage_17" sap:VirtualizedContainerService.HintSize="1192,91" />
-      <sap2010:ViewStateData Id="Sequence_18" sap:VirtualizedContainerService.HintSize="1214,8331">
+      <sap2010:ViewStateData Id="Sequence_18" sap:VirtualizedContainerService.HintSize="1214,8477">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">False</x:Boolean>
@@ -770,7 +794,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Process_Batch_1" sap:VirtualizedContainerService.HintSize="1254,8411">
+      <sap2010:ViewStateData Id="Process_Batch_1" sap:VirtualizedContainerService.HintSize="1254,8557">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="ShouldCollapseAll">False</x:Boolean>
