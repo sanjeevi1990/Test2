@@ -147,6 +147,20 @@
           "lib/netstandard2.0/Humanizer.dll": {}
         }
       },
+      "Microsoft.Activities/1.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/net45/_._": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.Activities.Design.Services.dll": {},
+          "lib/net45/Microsoft.Activities.Design.dll": {},
+          "lib/net45/Microsoft.Activities.dll": {},
+          "lib/net45/Microsoft.Workflow.Client.dll": {},
+          "lib/net45/Microsoft.Workflow.Common.dll": {},
+          "lib/net45/Microsoft.Workflow.Tracing.dll": {}
+        }
+      },
       "Microsoft.Exchange.WebServices/2.2.0": {
         "type": "package",
         "compile": {
@@ -671,6 +685,24 @@
         "lib/netstandard2.0/Humanizer.xml"
       ]
     },
+    "Microsoft.Activities/1.0.1": {
+      "sha512": "jkwJR/MMdyLol9wkIXkbpcCu8AUAJte7UZM6IcoeOnrX8cNgHppt6IawNfkhGqQs6ulTklBuZ2DjLj1/154iUA==",
+      "type": "package",
+      "path": "microsoft.activities/1.0.1",
+      "files": [
+        "lib/net45/Microsoft.Activities.Design.Services.dll",
+        "lib/net45/Microsoft.Activities.Design.dll",
+        "lib/net45/Microsoft.Activities.Design.xml",
+        "lib/net45/Microsoft.Activities.dll",
+        "lib/net45/Microsoft.Activities.xml",
+        "lib/net45/Microsoft.Workflow.Client.dll",
+        "lib/net45/Microsoft.Workflow.Client.xml",
+        "lib/net45/Microsoft.Workflow.Common.dll",
+        "lib/net45/Microsoft.Workflow.Tracing.dll",
+        "microsoft.activities.1.0.1.nupkg.sha512",
+        "microsoft.activities.nuspec"
+      ]
+    },
     "Microsoft.Exchange.WebServices/2.2.0": {
       "sha512": "NlkaTD0uWtg9VbiWq0VDWMBPzHFknH3tmstrxt0acrT09LBGqATTjRpsGOODz6tUdX7/dehBinxsf75U5Uw/+A==",
       "type": "package",
@@ -1063,6 +1095,7 @@
   "projectFileDependencyGroups": {
     "": [],
     ".NETFramework,Version=v4.6.1": [
+      "Microsoft.Activities >= 1.0.1 <= 1.0.1",
       "Microsoft.Office.Interop.Excel >= 15.0.4795.1000 <= 15.0.4795.1000",
       "Roboyo.Tools.Activities.CopyMoveDirectory >= 1.0.0 <= 1.0.0",
       "UiPath.Credentials.Activities >= 1.1.6479.13204 <= 1.1.6479.13204",
@@ -1079,13 +1112,18 @@
     "restore": {
       "projectUniqueName": "JEPP_RoboticEnterpriseFramework_Performer",
       "projectName": "JEPP_RoboticEnterpriseFramework_Performer",
-      "projectPath": "D:\\Kumudha Desktop\\users of c\\Documents\\JEPP Multibot(Dispacher, Performer and Audit Log sharepoint)UAT\\JEPP Multibot(Dispacher, Performer and Audit Log sharepoint)after fix\\JEPP Performer\\.local",
+      "projectPath": "D:\\Kumudha Desktop\\JEPP Bitbucket\\JEPP Performer\\.local",
       "packagesPath": "C:\\Users\\DMK2267\\.nuget\\packages\\",
-      "outputPath": "D:\\Kumudha Desktop\\users of c\\Documents\\JEPP Multibot(Dispacher, Performer and Audit Log sharepoint)UAT\\JEPP Multibot(Dispacher, Performer and Audit Log sharepoint)after fix\\JEPP Performer\\.local"
+      "outputPath": "D:\\Kumudha Desktop\\JEPP Bitbucket\\JEPP Performer\\.local"
     },
     "frameworks": {
       "net461": {
         "dependencies": {
+          "Microsoft.Activities": {
+            "include": "Runtime",
+            "target": "Package",
+            "version": "[1.0.1, 1.0.1]"
+          },
           "Microsoft.Office.Interop.Excel": {
             "include": "Runtime",
             "target": "Package",

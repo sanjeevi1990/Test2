@@ -3,6 +3,7 @@
  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
  xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
  xmlns:mvf="clr-namespace:Microsoft.VisualBasic.FileIO;assembly=Microsoft.VisualBasic"
+ xmlns:p="http://schemas.microsoft.com/workflow/2012/07/xaml/activities"
  xmlns:s="clr-namespace:System;assembly=mscorlib"
  xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
  xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
@@ -35,6 +36,9 @@
     <x:Property Name="in_Doc_Header" Type="InArgument(x:String)" />
     <x:Property Name="in_Country_Code" Type="InArgument(x:String)" />
     <x:Property Name="in_Document_Date_1" Type="InArgument(x:String)" />
+    <x:Property Name="In_XLS_File_Path" Type="InArgument(x:String)" />
+    <x:Property Name="out_Zip_Size" Type="OutArgument(x:String)" />
+    <x:Property Name="out_Mail_Size" Type="OutArgument(x:Int64)" />
   </x:Members>
   <mva:VisualBasic.Settings>
     <x:Null />
@@ -92,6 +96,7 @@
       <AssemblyReference>System.ComponentModel.Composition</AssemblyReference>
       <AssemblyReference>UiPath.Studio.Plugin.Workflow</AssemblyReference>
       <AssemblyReference>Microsoft.VisualStudio.Services.Common</AssemblyReference>
+      <AssemblyReference>System.Runtime.WindowsRuntime</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
   <Sequence sap2010:Annotation.AnnotationText="Send Mail and Move To Archive Folder" DisplayName="Send Mail and Move To Archive Folder" sap2010:WorkflowViewState.IdRef="Sequence_42">
@@ -112,6 +117,7 @@
       <Variable x:TypeArguments="ui:GenericValue" Name="document_Number" />
       <Variable x:TypeArguments="x:String" Name="extractPath" />
       <Variable x:TypeArguments="ui:GenericValue" Name="tracker_Count" />
+      <Variable x:TypeArguments="x:Int64" Name="zip_Size_in_bytes" />
     </Sequence.Variables>
     <Sequence sap2010:Annotation.AnnotationText="Assign Sequence" DisplayName="Assign Sequence" sap2010:WorkflowViewState.IdRef="Sequence_43">
       <Assign sap2010:WorkflowViewState.IdRef="Assign_95">
@@ -243,14 +249,70 @@
         </Catch>
       </TryCatch.Catches>
     </TryCatch>
-    <ui:SendOutlookMail Account="{x:Null}" Bcc="{x:Null}" MailMessage="{x:Null}" TimeoutMS="{x:Null}" sap2010:Annotation.AnnotationText="Send Mail To Notify Successful JV Processing" Body="[string.Format(report_Template,document_Number,Mail.From.Address,Mail.Headers.Get(&quot;date&quot;).ToString,to_Address,cc_address,subject.Replace(&quot;&gt;&quot;,&quot;&quot;),body.Replace(&quot;&gt;&quot;,&quot;&quot;).ToString,in_Gl_Mapping,in_Gl_Mapping)]" Cc="[in_CC_Mail+&quot;;&quot;+in_To_Address]" DisplayName="Send Mail To Notify Successful JV Processing" sap2010:WorkflowViewState.IdRef="SendOutlookMail_3" IsBodyHtml="True" IsDraft="False" Subject="[&quot;[JV Success] &quot;+document_Number+&quot; RE:&quot;+subject_Replaced]" To="[in_Sender_Email]">
-      <ui:SendOutlookMail.Files>
-        <scg:List x:TypeArguments="InArgument(x:String)" Capacity="4">
-          <InArgument x:TypeArguments="x:String">[in_Template_Path]</InArgument>
-          <InArgument x:TypeArguments="x:String">[in_Success_Path]</InArgument>
-        </scg:List>
-      </ui:SendOutlookMail.Files>
-    </ui:SendOutlookMail>
+    <Sequence DisplayName="Sequence to retry send mail sequence">
+      <Sequence.Variables>
+        <Variable x:TypeArguments="x:Boolean" Name="emailSentFlag" />
+      </Sequence.Variables>
+      <Assign>
+        <Assign.To>
+          <OutArgument x:TypeArguments="x:Boolean">[emailSentFlag]</OutArgument>
+        </Assign.To>
+        <Assign.Value>
+          <InArgument x:TypeArguments="x:Boolean">False</InArgument>
+        </Assign.Value>
+        <sap2010:WorkflowViewState.IdRef>Assign_105</sap2010:WorkflowViewState.IdRef>
+      </Assign>
+      <ui:RetryScope DisplayName="Retry Scope" NumberOfRetries="3" RetryInterval="00:00:10">
+        <ui:RetryScope.ActivityBody>
+          <ActivityAction>
+            <Sequence DisplayName="Action">
+              <TryCatch DisplayName="Send mail Try Catch" sap2010:WorkflowViewState.IdRef="TryCatch_7">
+                <TryCatch.Try>
+                  <Sequence>
+                    <ui:SendOutlookMail Account="{x:Null}" Bcc="{x:Null}" MailMessage="{x:Null}" sap2010:Annotation.AnnotationText="Send Mail To Notify Successful JV Processing" Body="[string.Format(report_Template,document_Number,Mail.From.Address,Mail.Headers.Get(&quot;date&quot;).ToString,to_Address,cc_address,subject.Replace(&quot;&gt;&quot;,&quot;&quot;),body.Replace(&quot;&gt;&quot;,&quot;&quot;).ToString,in_Gl_Mapping,in_Gl_Mapping)]" Cc="[in_CC_Mail+&quot;;&quot;+in_To_Address]" DisplayName="Send Mail To Notify Successful JV Processing" sap2010:WorkflowViewState.IdRef="SendOutlookMail_3" IsBodyHtml="True" IsDraft="False" Subject="[&quot;[JV Success] &quot;+document_Number+&quot; RE:&quot;+subject_Replaced]" TimeoutMS="60000" To="[in_Sender_Email]">
+                      <ui:SendOutlookMail.Files>
+                        <scg:List x:TypeArguments="InArgument(x:String)" Capacity="4">
+                          <InArgument x:TypeArguments="x:String">[in_Template_Path]</InArgument>
+                          <InArgument x:TypeArguments="x:String">[in_Success_Path]</InArgument>
+                        </scg:List>
+                      </ui:SendOutlookMail.Files>
+                    </ui:SendOutlookMail>
+                    <Assign>
+                      <Assign.To>
+                        <OutArgument x:TypeArguments="x:Boolean">[emailSentFlag]</OutArgument>
+                      </Assign.To>
+                      <Assign.Value>
+                        <InArgument x:TypeArguments="x:Boolean">True</InArgument>
+                      </Assign.Value>
+                      <sap2010:WorkflowViewState.IdRef>Assign_106</sap2010:WorkflowViewState.IdRef>
+                    </Assign>
+                    <sap2010:WorkflowViewState.IdRef>Sequence_49</sap2010:WorkflowViewState.IdRef>
+                  </Sequence>
+                </TryCatch.Try>
+                <TryCatch.Catches>
+                  <Catch x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="Catch`1_7">
+                    <ActivityAction x:TypeArguments="s:Exception">
+                      <ActivityAction.Argument>
+                        <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+                      </ActivityAction.Argument>
+                      <ui:LogMessage DisplayName="Log Message" Level="Info" Message="[&quot;Retry to send mail&quot;]" sap2010:WorkflowViewState.IdRef="LogMessage_41" />
+                    </ActivityAction>
+                  </Catch>
+                </TryCatch.Catches>
+              </TryCatch>
+              <sap2010:WorkflowViewState.IdRef>Sequence_50</sap2010:WorkflowViewState.IdRef>
+            </Sequence>
+          </ActivityAction>
+        </ui:RetryScope.ActivityBody>
+        <ui:RetryScope.Condition>
+          <ActivityFunc x:TypeArguments="x:Boolean">
+            <p:IsTrue DisplayName="Is true" Input="[emailSentFlag]" sap2010:WorkflowViewState.IdRef="IsTrue_1" />
+          </ActivityFunc>
+        </ui:RetryScope.Condition>
+        <sap2010:WorkflowViewState.IdRef>RetryScope_1</sap2010:WorkflowViewState.IdRef>
+      </ui:RetryScope>
+      <sap2010:WorkflowViewState.IdRef>Sequence_51</sap2010:WorkflowViewState.IdRef>
+    </Sequence>
     <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_25" Level="Info" Message="[&quot;Mail sent to requestor along with screenshot and original file&quot;]" />
     <Assign DisplayName="Assign - Archive folder name" sap2010:WorkflowViewState.IdRef="Assign_81">
       <Assign.To>
@@ -260,9 +322,9 @@
         <InArgument x:TypeArguments="ui:GenericValue">["JV Archive\"+in_Company_Code.Trim]</InArgument>
       </Assign.Value>
     </Assign>
-    <ui:MoveOutlookMessage Account="[in_Config(&quot;Account_Name&quot;).ToString]" sap2010:Annotation.AnnotationText="Move Mail To Shared Mail Box Archive Folder" DisplayName="Move Mail To Shared Mail Box Archive Folder" sap2010:WorkflowViewState.IdRef="MoveOutlookMessage_8" MailFolder="[archive_Folder_Name]" MailMessage="[Mail]" />
-    <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_26" Level="Info" Message="[&quot;Requestor email moved to JV archive folder&quot;]" />
-    <Delay Duration="00:00:10" sap2010:WorkflowViewState.IdRef="Delay_9" />
+    <ui:MoveOutlookMessage Account="[in_Config(&quot;Account_Name&quot;).ToString]" sap2010:Annotation.AnnotationText="Move Mail To Shared Mail Box Archive Folder" DisplayName="Move Mail To Shared Mail Box Archive Folder" sap2010:WorkflowViewState.IdRef="MoveOutlookMessage_10" MailFolder="[archive_Folder_Name]" MailMessage="[Mail]" />
+    <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_40" Level="Info" Message="[&quot;Requestor email moved to JV archive folder&quot;]" />
+    <Delay Duration="00:00:10" sap2010:WorkflowViewState.IdRef="Delay_12" />
     <TryCatch sap2010:Annotation.AnnotationText="Try Catch - Move sent mail to archive folder" DisplayName="Try Catch - Move sent mail to archive folder" sap2010:WorkflowViewState.IdRef="TryCatch_6">
       <TryCatch.Try>
         <Sequence DisplayName="Move mail to archive folder Sequence" sap2010:WorkflowViewState.IdRef="Sequence_38">
@@ -402,7 +464,17 @@
         <Variable x:TypeArguments="ui:GenericValue" Name="replaced_File_path" />
       </Sequence.Variables>
       <ui:SaveMail DisplayName="Save Mail Message" FilePath="[in_Config(&quot;shared_Folder_Path_For_Attachments&quot;).ToString+in_Transaction_Queue_Item_Mails_Data.SpecificContent(&quot;mail_Folder_Count&quot;).ToString+&quot;\&quot;+&quot;Mail.eml&quot;]" sap2010:WorkflowViewState.IdRef="SaveMail_9" MailMessage="[in_Mail_Message]" />
+      <Assign sap2010:WorkflowViewState.IdRef="Assign_104">
+        <Assign.To>
+          <OutArgument x:TypeArguments="x:Int64">[out_Mail_Size]</OutArgument>
+        </Assign.To>
+        <Assign.Value>
+          <InArgument x:TypeArguments="x:Int64">[new fileinfo(in_Config("shared_Folder_Path_For_Attachments").ToString+in_Transaction_Queue_Item_Mails_Data.SpecificContent("mail_Folder_Count").ToString+"\"+"Mail.eml").Length]</InArgument>
+        </Assign.Value>
+      </Assign>
       <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_35" Level="Info" Message="[&quot;Original Email Saved&quot;]" />
+      <ui:Delete ContinueOnError="True" sap2010:WorkflowViewState.IdRef="Delete_5" Path="[In_XLS_File_Path]" />
+      <ui:Delete ContinueOnError="True" sap2010:WorkflowViewState.IdRef="Delete_6" Path="[in_Template_Path]" />
       <Assign DisplayName="Assign - Folder path" sap2010:WorkflowViewState.IdRef="Assign_89">
         <Assign.To>
           <OutArgument x:TypeArguments="ui:GenericValue">[folder_Path]</OutArgument>
@@ -477,6 +549,24 @@
           <InArgument x:TypeArguments="x:String">[zipPath]</InArgument>
           <InArgument x:TypeArguments="x:String">[extractPath]</InArgument>
         </InvokeMethod>
+        <Assign sap2010:WorkflowViewState.IdRef="Assign_102">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:Int64">[zip_Size_in_bytes]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:Int64">[new fileinfo(extractPath).Length]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign sap2010:WorkflowViewState.IdRef="Assign_103">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[out_Zip_Size]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">[(convert.ToInt64(Convert.ToDouble(zip_Size_in_bytes) / 1024)).ToString]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <ui:CreateDirectory ContinueOnError="{x:Null}" DisplayName="Create Directory" sap2010:WorkflowViewState.IdRef="CreateDirectory_1" Path="[in_Config(&quot;Local_Path_to_Shared_Path&quot;).ToString+year+&quot;\&quot;+month+&quot;\&quot;+in_Company_Code+&quot;\&quot;+&quot;Success&quot;+&quot;\&quot;]" />
+        <ui:MoveFile ContinueOnError="{x:Null}" Destination="[in_Config(&quot;Local_Path_to_Shared_Path&quot;).ToString+year+&quot;\&quot;+month+&quot;\&quot;+in_Company_Code+&quot;\&quot;+&quot;Success&quot;+&quot;\&quot;]" DisplayName="Move File" sap2010:WorkflowViewState.IdRef="MoveFile_1" Overwrite="False" Path="[extractPath]" />
       </Sequence>
       <ui:Delete ContinueOnError="True" sap2010:WorkflowViewState.IdRef="Delete_3" Path="[new_Path]" />
       <ui:Delete ContinueOnError="True" sap2010:WorkflowViewState.IdRef="Delete_4" Path="[shared_DrivePath]" />
@@ -518,12 +608,13 @@
           <ui:WriteCell Cell="[&quot;K&quot;+tracker_Count]" DisplayName="Reason Of Failure- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_17" SheetName="Processing_Log" Text="Transaction Successfull" WorkbookPath="[in_Audit_Log_Path]" />
           <ui:WriteCell Cell="[&quot;L&quot;+tracker_Count]" DisplayName="Reason Of Failure- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_18" SheetName="Processing_Log" Text="[in_Country_Code]" WorkbookPath="[in_Audit_Log_Path]" />
         </Sequence>
-        <ui:WriteCell Cell="[&quot;M&quot;+tracker_Count]" DisplayName="Request Status- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_5" SheetName="Processing_Log" Text="[shared_DrivePath+&quot;.zip&quot;]" WorkbookPath="[in_Audit_Log_Path]" />
+        <ui:WriteCell Cell="[&quot;M&quot;+tracker_Count]" DisplayName="Request Status- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_5" SheetName="Processing_Log" Text="[in_Config(&quot;Local_Path_to_Shared_Path&quot;).ToString+year+&quot;\&quot;+month+&quot;\&quot;+in_Company_Code+&quot;\&quot;+&quot;Success&quot;+&quot;\&quot;+document_Number+&quot;.zip&quot;]" WorkbookPath="[in_Audit_Log_Path]" />
         <ui:WriteCell Cell="[&quot;O&quot;+tracker_Count]" DisplayName="Request Status- Write Cell" sap2010:WorkflowViewState.IdRef="WriteCell_6" SheetName="Processing_Log" Text="[tracker_Count-1]" WorkbookPath="[in_Audit_Log_Path]" />
+        <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_38" Level="Info" Message="[&quot;Processing Sl. No :- &quot;+ (tracker_Count-1)]" />
         <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_37" Level="Info" Message="[&quot;Transaction successful&quot;]" />
       </Sequence>
     </Sequence>
-    <sads:DebugSymbol.Symbol>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</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>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</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
@@ -643,12 +734,69 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="SendOutlookMail_3" sap:VirtualizedContainerService.HintSize="960,145">
+      <sap2010:ViewStateData Id="Assign_105" sap:VirtualizedContainerService.HintSize="314,60" />
+      <sap2010:ViewStateData Id="SendOutlookMail_3" sap:VirtualizedContainerService.HintSize="314,145">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
             <x:Boolean x:Key="IsPinned">True</x:Boolean>
             <x:Boolean x:Key="IsAnnotationDocked">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_106" sap:VirtualizedContainerService.HintSize="314,60" />
+      <sap2010:ViewStateData Id="Sequence_49" sap:VirtualizedContainerService.HintSize="336,369">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="LogMessage_41" sap:VirtualizedContainerService.HintSize="314,91">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsPinned">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Catch`1_7" sap:VirtualizedContainerService.HintSize="400,160">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="TryCatch_7" sap:VirtualizedContainerService.HintSize="200,51">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Sequence_50" sap:VirtualizedContainerService.HintSize="222,175">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="IsTrue_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="RetryScope_1" sap:VirtualizedContainerService.HintSize="314,436">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsPinned">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Sequence_51" sap:VirtualizedContainerService.HintSize="960,660">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
@@ -661,16 +809,17 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="MoveOutlookMessage_8" sap:VirtualizedContainerService.HintSize="960,51">
+      <sap2010:ViewStateData Id="MoveOutlookMessage_10" sap:VirtualizedContainerService.HintSize="960,87">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
             <x:Boolean x:Key="IsAnnotationDocked">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="LogMessage_26" sap:VirtualizedContainerService.HintSize="960,51" />
-      <sap2010:ViewStateData Id="Delay_9" sap:VirtualizedContainerService.HintSize="960,22">
+      <sap2010:ViewStateData Id="LogMessage_40" sap:VirtualizedContainerService.HintSize="960,51" />
+      <sap2010:ViewStateData Id="Delay_12" sap:VirtualizedContainerService.HintSize="960,22">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -860,13 +1009,25 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="LogMessage_30" sap:VirtualizedContainerService.HintSize="314,91" />
-      <sap2010:ViewStateData Id="LogMessage_31" sap:VirtualizedContainerService.HintSize="314,91" />
-      <sap2010:ViewStateData Id="Sequence_39" sap:VirtualizedContainerService.HintSize="200,51">
+      <sap2010:ViewStateData Id="LogMessage_30" sap:VirtualizedContainerService.HintSize="314,91">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsPinned">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="LogMessage_31" sap:VirtualizedContainerService.HintSize="314,91">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsPinned">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Sequence_39" sap:VirtualizedContainerService.HintSize="336,346">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
@@ -887,14 +1048,15 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="SaveMail_9" sap:VirtualizedContainerService.HintSize="358,51">
+      <sap2010:ViewStateData Id="SaveMail_9" sap:VirtualizedContainerService.HintSize="358,87">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_104" sap:VirtualizedContainerService.HintSize="358,60" />
       <sap2010:ViewStateData Id="LogMessage_35" sap:VirtualizedContainerService.HintSize="358,91">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
@@ -902,6 +1064,8 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Delete_5" sap:VirtualizedContainerService.HintSize="358,22" />
+      <sap2010:ViewStateData Id="Delete_6" sap:VirtualizedContainerService.HintSize="358,22" />
       <sap2010:ViewStateData Id="Assign_89" sap:VirtualizedContainerService.HintSize="358,60" />
       <sap2010:ViewStateData Id="Assign_90" sap:VirtualizedContainerService.HintSize="358,60" />
       <sap2010:ViewStateData Id="InvokeMethod_5" sap:VirtualizedContainerService.HintSize="358,132" />
@@ -920,7 +1084,11 @@
       <sap2010:ViewStateData Id="Assign_99" sap:VirtualizedContainerService.HintSize="242,60" />
       <sap2010:ViewStateData Id="Assign_100" sap:VirtualizedContainerService.HintSize="242,60" />
       <sap2010:ViewStateData Id="InvokeMethod_9" sap:VirtualizedContainerService.HintSize="242,132" />
-      <sap2010:ViewStateData Id="Sequence_46" sap:VirtualizedContainerService.HintSize="358,456">
+      <sap2010:ViewStateData Id="Assign_102" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_103" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="CreateDirectory_1" sap:VirtualizedContainerService.HintSize="242,22" />
+      <sap2010:ViewStateData Id="MoveFile_1" sap:VirtualizedContainerService.HintSize="242,22" />
+      <sap2010:ViewStateData Id="Sequence_46" sap:VirtualizedContainerService.HintSize="358,780">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -1038,8 +1206,15 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="LogMessage_38" sap:VirtualizedContainerService.HintSize="336,91">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsPinned">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="LogMessage_37" sap:VirtualizedContainerService.HintSize="336,51" />
-      <sap2010:ViewStateData Id="Sequence_40" sap:VirtualizedContainerService.HintSize="358,2660">
+      <sap2010:ViewStateData Id="Sequence_40" sap:VirtualizedContainerService.HintSize="358,2791">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -1047,7 +1222,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_41" sap:VirtualizedContainerService.HintSize="960,4692">
+      <sap2010:ViewStateData Id="Sequence_41" sap:VirtualizedContainerService.HintSize="960,5407">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -1056,7 +1231,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_42" sap:VirtualizedContainerService.HintSize="982,8727">
+      <sap2010:ViewStateData Id="Sequence_42" sap:VirtualizedContainerService.HintSize="982,9993">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -1065,7 +1240,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="SendMailand_MoveToArchiveFolder_1" sap:VirtualizedContainerService.HintSize="1022,8807">
+      <sap2010:ViewStateData Id="SendMailand_MoveToArchiveFolder_1" sap:VirtualizedContainerService.HintSize="1022,10073">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="ShouldExpandAll">False</x:Boolean>

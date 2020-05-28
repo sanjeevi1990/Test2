@@ -169,6 +169,26 @@
           "lib/net452/Microsoft.Rest.ClientRuntime.dll": {}
         }
       },
+      "Microsoft.SharePoint2016.CSOM/16.0.4351.1000": {
+        "type": "package",
+        "compile": {
+          "lib/net45/_._": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.Office.Client.Policy.dll": {},
+          "lib/net45/Microsoft.Office.Client.TranslationServices.dll": {},
+          "lib/net45/Microsoft.Online.SharePoint.Client.Tenant.dll": {},
+          "lib/net45/Microsoft.SharePoint.Client.DocumentManagement.dll": {},
+          "lib/net45/Microsoft.SharePoint.Client.Publishing.dll": {},
+          "lib/net45/Microsoft.SharePoint.Client.Runtime.dll": {},
+          "lib/net45/Microsoft.SharePoint.Client.Search.Applications.dll": {},
+          "lib/net45/Microsoft.SharePoint.Client.Search.dll": {},
+          "lib/net45/Microsoft.SharePoint.Client.Taxonomy.dll": {},
+          "lib/net45/Microsoft.SharePoint.Client.UserProfiles.dll": {},
+          "lib/net45/Microsoft.SharePoint.Client.WorkflowServices.dll": {},
+          "lib/net45/Microsoft.SharePoint.Client.dll": {}
+        }
+      },
       "Microsoft.VisualStudio.OLE.Interop/7.10.6071": {
         "type": "package",
         "compile": {
@@ -441,6 +461,20 @@
           "lib/net452/UiPath.Vision.Core.dll": {},
           "lib/net452/UiPath.Vision.dll": {}
         }
+      },
+      "UiPathTeam.SharePoint.Activities/1.3.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.SharePoint2016.CSOM": "16.0.0"
+        },
+        "compile": {
+          "lib/net461/_._": {}
+        },
+        "runtime": {
+          "lib/net461/UiPathTeam.SharePoint.Activities.Design.dll": {},
+          "lib/net461/UiPathTeam.SharePoint.Activities.dll": {},
+          "lib/net461/UiPathTeam.SharePoint.dll": {}
+        }
       }
     }
   },
@@ -684,6 +718,28 @@
         "lib/netstandard1.4/Microsoft.Rest.ClientRuntime.xml",
         "microsoft.rest.clientruntime.2.3.10.nupkg.sha512",
         "microsoft.rest.clientruntime.nuspec"
+      ]
+    },
+    "Microsoft.SharePoint2016.CSOM/16.0.4351.1000": {
+      "sha512": "P3aPXHERU8aB1O7DpIEtK9v0AKuS9GZw2kfDvXiwCXWiS3gdnY01NHKY0WtbhMr9yl4af6MinSJY5BbBVfnkGQ==",
+      "type": "package",
+      "path": "microsoft.sharepoint2016.csom/16.0.4351.1000",
+      "files": [
+        ".signature.p7s",
+        "lib/net45/Microsoft.Office.Client.Policy.dll",
+        "lib/net45/Microsoft.Office.Client.TranslationServices.dll",
+        "lib/net45/Microsoft.Online.SharePoint.Client.Tenant.dll",
+        "lib/net45/Microsoft.SharePoint.Client.DocumentManagement.dll",
+        "lib/net45/Microsoft.SharePoint.Client.Publishing.dll",
+        "lib/net45/Microsoft.SharePoint.Client.Runtime.dll",
+        "lib/net45/Microsoft.SharePoint.Client.Search.Applications.dll",
+        "lib/net45/Microsoft.SharePoint.Client.Search.dll",
+        "lib/net45/Microsoft.SharePoint.Client.Taxonomy.dll",
+        "lib/net45/Microsoft.SharePoint.Client.UserProfiles.dll",
+        "lib/net45/Microsoft.SharePoint.Client.WorkflowServices.dll",
+        "lib/net45/Microsoft.SharePoint.Client.dll",
+        "microsoft.sharepoint2016.csom.16.0.4351.1000.nupkg.sha512",
+        "microsoft.sharepoint2016.csom.nuspec"
       ]
     },
     "Microsoft.VisualStudio.OLE.Interop/7.10.6071": {
@@ -1017,6 +1073,18 @@
         "uipath.vision.1.2.0.nupkg.sha512",
         "uipath.vision.nuspec"
       ]
+    },
+    "UiPathTeam.SharePoint.Activities/1.3.0": {
+      "sha512": "sQl9/vPVfcnc1rKBPkC0K5ZdNtO1wjgpPQZy1XUdzvqT8Ri/r55J8FaAFraEl4GCAFXStzPQF7uZqS0QKuhJ8Q==",
+      "type": "package",
+      "path": "uipathteam.sharepoint.activities/1.3.0",
+      "files": [
+        "lib/net461/UiPathTeam.SharePoint.Activities.Design.dll",
+        "lib/net461/UiPathTeam.SharePoint.Activities.dll",
+        "lib/net461/UiPathTeam.SharePoint.dll",
+        "uipathteam.sharepoint.activities.1.3.0.nupkg.sha512",
+        "uipathteam.sharepoint.activities.nuspec"
+      ]
     }
   },
   "projectFileDependencyGroups": {
@@ -1026,19 +1094,20 @@
       "UiPath.Excel.Activities >= 2.5.1 <= 2.5.1",
       "UiPath.Mail.Activities >= 1.3.0 <= 1.3.0",
       "UiPath.System.Activities >= 18.4.2 <= 18.4.2",
-      "UiPath.UIAutomation.Activities >= 18.4.5 <= 18.4.5"
+      "UiPath.UIAutomation.Activities >= 18.4.5 <= 18.4.5",
+      "UiPathTeam.SharePoint.Activities >= 1.3.0 <= 1.3.0"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\SVC-0990559\\.nuget\\packages\\": {}
+    "C:\\Users\\DMK2267\\.nuget\\packages\\": {}
   },
   "project": {
     "restore": {
       "projectUniqueName": "JEPP_Merge_Audit_Log_and_Share_Point_RE_Framework",
       "projectName": "JEPP_Merge_Audit_Log_and_Share_Point_RE_Framework",
-      "projectPath": "C:\\Users\\SVC-0990559\\Music\\JEPP Multibot(Dispacher and Performer)\\JEPP SharePoint and Merge Audit Log\\.local",
-      "packagesPath": "C:\\Users\\SVC-0990559\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\SVC-0990559\\Music\\JEPP Multibot(Dispacher and Performer)\\JEPP SharePoint and Merge Audit Log\\.local"
+      "projectPath": "D:\\Kumudha Desktop\\JEPP Bitbucket new\\JEPP SharePoint and Merge Audit Log\\.local",
+      "packagesPath": "C:\\Users\\DMK2267\\.nuget\\packages\\",
+      "outputPath": "D:\\Kumudha Desktop\\JEPP Bitbucket new\\JEPP SharePoint and Merge Audit Log\\.local"
     },
     "frameworks": {
       "net461": {
@@ -1067,9 +1136,26 @@
             "include": "Runtime",
             "target": "Package",
             "version": "[18.4.5, 18.4.5]"
+          },
+          "UiPathTeam.SharePoint.Activities": {
+            "include": "Runtime",
+            "target": "Package",
+            "version": "[1.3.0, 1.3.0]"
           }
         }
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1603",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "UiPathTeam.SharePoint.Activities 1.3.0 depends on Microsoft.SharePoint2016.CSOM (>= 16.0.0) but Microsoft.SharePoint2016.CSOM 16.0.0 was not found. An approximate best match of Microsoft.SharePoint2016.CSOM 16.0.4351.1000 was resolved.",
+      "libraryId": "Microsoft.SharePoint2016.CSOM",
+      "targetGraphs": [
+        ".NETFramework,Version=v4.6.1"
+      ]
+    }
+  ]
 }

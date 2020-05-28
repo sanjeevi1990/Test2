@@ -9,11 +9,12 @@
     "UiPath.Credentials.Activities": "[1.1.6479.13204]",
     "Microsoft.Office.Interop.Excel": "[15.0.4795.1000]",
     "UiPath.Excel.Activities": "[2.5.1]",
-    "Roboyo.Tools.Activities.CopyMoveDirectory": "[1.0.0]"
+    "Roboyo.Tools.Activities.CopyMoveDirectory": "[1.0.0]",
+    "Microsoft.Activities": "[1.0.1]"
   },
   "schemaVersion": "3.2",
   "studioVersion": "18.4.5.0",
-  "projectVersion": "1.23.934.5",
+  "projectVersion": "1.23.7373.10008",
   "runtimeOptions": {
     "autoDispose": false,
     "excludedLoggedData": [
